@@ -20,9 +20,22 @@ def main():
     # Create a group to store game pieces
     gamePieces = pieces.PieceGroup()
     
-    # Create 2 pieces and add them to the group
+    # Create 4 pieces and add them to the group
     gamePieces.add(pieces.Piece("pieces/images/default-piece.png", "pieces/images/default-piece-selected.png", (0,0)))
-    gamePieces.add(pieces.Piece("pieces/images/default-piece.png", "pieces/images/default-piece-selected.png", (2,2)))
+    gamePieces.add(pieces.Piece("pieces/images/default-piece.png", "pieces/images/default-piece-selected.png", (0,9)))
+    gamePieces.add(pieces.Piece("pieces/images/default-piece.png", "pieces/images/default-piece-selected.png", (9,0)))
+    gamePieces.add(pieces.Piece("pieces/images/default-piece.png", "pieces/images/default-piece-selected.png", (9,9)))
+
+    # Create a board object, and pass it the correct width and height, images and center is on the screen
+    board = Board(
+        configs.SQUARE_COUNT_WIDTH,
+        configs.SQUARE_COUNT_HEIGHT,
+        "pieces/images/board-tile-white.png",
+        "pieces/images/board-tile-black.png",
+        ((configs.WIDTH-configs.SQUARE_SIZE*configs.SQUARE_COUNT_WIDTH)//2,
+         (configs.HEIGHT-configs.SQUARE_SIZE*configs.SQUARE_COUNT_HEIGHT)//2
+        )
+    )
 
     # Create a clock object
     clock = pygame.time.Clock()
@@ -66,6 +79,9 @@ def main():
 
         # Clear the screen
         screen.fill((255,255,255))
+
+        # Draw the board
+        board.draw(screen)
         
         # Draw the game pieces
         gamePieces.draw(screen)
