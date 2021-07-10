@@ -34,8 +34,8 @@ def main():
         "images/board-tile-black.png",
         "images/board-tile-white-selected.png",
         "images/board-tile-black-selected.png",
-        ((configs.WIDTH-configs.SQUARE_SIZE*configs.SQUARE_COUNT_WIDTH)//2,
-         (configs.HEIGHT-configs.SQUARE_SIZE*configs.SQUARE_COUNT_HEIGHT)//2
+        ((configs.WIDTH//configs.SQUARE_SIZE-configs.SQUARE_COUNT_WIDTH)//2,
+         (configs.HEIGHT//configs.SQUARE_SIZE-configs.SQUARE_COUNT_HEIGHT)//2
         )
     )
 

@@ -15,10 +15,15 @@ class BoardTile(pygame.sprite.Sprite):
         # Store whether or not the tile is highlighted
         self.highlighted = False
 
+        # Store which square we're on
+        self.squarex = tile_top_left[0]
+        self.squarey = tile_top_left[1]
+
         # Create and position a rectangle to draw the tile in
         self.rect = self.image.get_rect()
-        self.rect.topleft = tile_top_left
-
+        self.rect.topleft = (tile_top_left[0]*configs.SQUARE_SIZE,
+                             tile_top_left[1]*configs.SQUARE_SIZE)
+        
     # Function to switch a tile to the highlighted image
     def highlight(self):
         self.image = self.highlighted_image
@@ -78,8 +83,8 @@ class Board():
                          if w % 2 == h % 2
                          else board_tile_black_selected_image),
                         # Determine where the tile should go
-                        (top_left_point[0]+w*configs.SQUARE_SIZE,
-                         top_left_point[1]+h*configs.SQUARE_SIZE)
+                        (top_left_point[0]+w,
+                         top_left_point[1]+h)
                     )
                 )
     # Highlights all board tiles that collide with a point
