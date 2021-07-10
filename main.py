@@ -23,7 +23,7 @@ def main():
     # Create 4 pieces and add them to the group
     gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (0,0)))
     gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (0,9)))
-    gamePieces.add(pieces.Rook((9,0)))
+    gamePieces.add(pieces.Rook((8,1)))
     gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (9,9)))
 
     # Create a board object, and pass it the correct width and height, images and center is on the screen
@@ -63,7 +63,7 @@ def main():
                         event.pos[1]//configs.SQUARE_SIZE
                         )
                     # Check if the square we're moving to is valid
-                    if selectedPiece.isValidMove(targetSquare, gamePieces):
+                    if selectedPiece.isValidMove(targetSquare, gamePieces, board):
                         # If so, move to the square
                         selectedPiece.move(targetSquare[0], targetSquare[1])
 

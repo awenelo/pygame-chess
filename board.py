@@ -82,26 +82,35 @@ class Board():
                          top_left_point[1]+h*configs.SQUARE_SIZE)
                     )
                 )
-
+    # Highlights all board tiles that collide with a point
     def highlight_point(self, point):
         for sprite in self.boardGroup.sprites():
             if sprite.rect.collidepoint(point):
                 sprite.highlight()
 
+    # Dehighlights all board tiles that collide with a point
     def dehighlight_point(self, point):
         for sprite in self.boardGroup.sprites():
             if sprite.rect.collidepoint(point):
                 sprite.dehighlight()
 
+    # Toggles the highlight on all board tiles that collide with a point
     def toggle_highlight_point(self, point):
         for sprite in self.boardGroup.sprites():
             if sprite.rect.collidepoint(point):
                 sprite.toggle_highlight()
 
+    # Removes the highlight from all tiles that don't collide with a point
     def remove_other_highlight_points(self, point):
         for sprite in self.boardGroup.sprites():
             if not sprite.rect.collidepoint(point):
                 sprite.dehighlight()
+
+    # Checks if a point is on the board
+    def is_on_board(self, point):
+        for sprite in self.boardGroup.sprites():
+            if sprite.rect.collidepoint(point):
+                return True
     
     def draw(self, screen):
         # Draw every item in boardGroup

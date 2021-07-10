@@ -40,7 +40,7 @@ class Piece(pygame.sprite.Sprite):
         # Draw the image on the screen at the same position as rect
         screen.blit(self.image, self.rect)
 
-    def isValidMove(self, targetSquare, gamePieces):
+    def isValidMove(self, targetSquare, gamePieces, board):
         # With the defualt piece, any move is legal
         return True
 
