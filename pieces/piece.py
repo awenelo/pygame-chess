@@ -40,10 +40,6 @@ class Piece(pygame.sprite.Sprite):
         # Draw the image on the screen at the same position as rect
         screen.blit(self.image, self.rect)
 
-    def collidesWithPoint(self, point):
-        # Checks if the piece collides with the point using collidepoint
-        return self.rect.collidepoint(point)
-
     def isValidMove(self, targetSquare, gamePieces):
         # With the defualt piece, any move is legal
         return True
@@ -64,7 +60,7 @@ class PieceGroup(pygame.sprite.Group):
         # Loops through all the srites until it finds a sprite that collides with the point
         # If no sprites collide with the point, it returns None
         for sprite in self.sprites():
-            if sprite.collidesWithPoint(point):
+            if sprite.rect.collidepoint(point):
                 return sprite
         return None
             

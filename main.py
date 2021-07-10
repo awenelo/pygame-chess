@@ -21,17 +21,19 @@ def main():
     gamePieces = pieces.PieceGroup()
     
     # Create 4 pieces and add them to the group
-    gamePieces.add(pieces.Piece("pieces/images/default-piece.png", "pieces/images/default-piece-selected.png", (0,0)))
-    gamePieces.add(pieces.Piece("pieces/images/default-piece.png", "pieces/images/default-piece-selected.png", (0,9)))
-    gamePieces.add(pieces.Piece("pieces/images/default-piece.png", "pieces/images/default-piece-selected.png", (9,0)))
-    gamePieces.add(pieces.Piece("pieces/images/default-piece.png", "pieces/images/default-piece-selected.png", (9,9)))
+    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (0,0)))
+    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (0,9)))
+    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (9,0)))
+    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (9,9)))
 
     # Create a board object, and pass it the correct width and height, images and center is on the screen
     board = Board(
         configs.SQUARE_COUNT_WIDTH,
         configs.SQUARE_COUNT_HEIGHT,
-        "pieces/images/board-tile-white.png",
-        "pieces/images/board-tile-black.png",
+        "images/board-tile-white.png",
+        "images/board-tile-black.png",
+        "images/board-tile-white-selected.png",
+        "images/board-tile-black-selected.png",
         ((configs.WIDTH-configs.SQUARE_SIZE*configs.SQUARE_COUNT_WIDTH)//2,
          (configs.HEIGHT-configs.SQUARE_SIZE*configs.SQUARE_COUNT_HEIGHT)//2
         )
@@ -51,7 +53,7 @@ def main():
                 # If there's a quit event, quit and raise SystemExit to stop execution
                 pygame.quit()
                 raise SystemExit
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Check if a piece has been selected, if no piece has been selected, selectedPiece will resolve to be False
                 if selectedPiece:
                     # Move selectedPiece to the new location, if the move is valid and selectedPiece is not None
@@ -76,6 +78,12 @@ def main():
                     # If we selected a piece (selectedPiece != None), set the piece to be selected
                     if selectedPiece:
                         selectedPiece.select()
+            elif event.type == pygame.MOUSEMOTION:
+                # Highlight the square the mouse is hovering over/dragging over
+                board.highlight_point(event.pos)
+
+                # Dehighlight every other square
+                board.remove_other_highlight_points(event.pos)
 
         # Clear the screen
         screen.fill((255,255,255))
