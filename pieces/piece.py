@@ -1,5 +1,5 @@
 import pygame
-from configs import SQUARE_SIZE
+import configs
 
 # General piece class, all pieces should have this as their parent
 class Piece(pygame.sprite.Sprite):
@@ -19,14 +19,14 @@ class Piece(pygame.sprite.Sprite):
         self.squarex, self.squarey = startingsquare
 
         # Set the position of the piece
-        self.rect.x = self.squarex * SQUARE_SIZE
-        self.rect.y = self.squarey * SQUARE_SIZE
+        self.rect.x = self.squarex * configs.SQUARE_SIZE
+        self.rect.y = self.squarey * configs.SQUARE_SIZE
 
     def move(self, squarex, squarey):
         # Move to a square
         # No collision checking right now, just set the position of the piece
-        self.rect.x = squarex * SQUARE_SIZE
-        self.rect.y = squarey * SQUARE_SIZE
+        self.rect.x = squarex * configs.SQUARE_SIZE
+        self.rect.y = squarey * configs.SQUARE_SIZE
 
         # Store what square we're on
         self.squarex = squarex
@@ -41,8 +41,9 @@ class Piece(pygame.sprite.Sprite):
         screen.blit(self.image, self.rect)
 
     def isValidMove(self, targetSquare, gamePieces, board):
-        # With the defualt piece, any move is legal
-        return True
+        # With the defualt piece, any move that doesn't overlap another piece is legal
+        # We check that by calling spriteCollidedWithPoint on the target square, and checking if it returns none
+        return not gamePieces.spriteCollidedWithPoint((targetSquare[0]*configs.SQUARE_SIZE, targetSquare[1]*configs.SQUARE_SIZE))
 
     def select(self):
         # Set the piece to have the selected image

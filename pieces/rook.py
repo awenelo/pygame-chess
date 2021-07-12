@@ -10,6 +10,10 @@ class Rook(Piece):
                          startingsquare)
     # Function to check if move is leagal, overwrites the default function
     def isValidMove(self, targetSquare, gamePieces, board):
+        # Check that Piece doesn't have something against moving here
+        if not super().isValidMove(targetSquare, gamePieces, board):
+            return False
+        
         # Check that the piece is on the board, if it's not, make the move invalid no matter what
         if not board.is_on_board(self.rect.center):
             return False
