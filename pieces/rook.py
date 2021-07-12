@@ -5,9 +5,10 @@ import configs
 
 class Rook(Piece):
     # Overwrite the __init__ function to pass different images without input from main.py
-    def __init__(self, startingsquare):
-        super().__init__("images/rook-piece.png",
-                         "images/rook-piece-selected.png",
+    def __init__(self, startingsquare, isWhite):
+        super().__init__(pygame.image.load("images/rook-piece-white.png"),
+                         pygame.image.load("images/rook-piece-black.png"),
+                         isWhite,
                          startingsquare)
     # Function to check if move is leagal, overwrites the default function
     def is_valid_move(self, targetSquare, gamePieces, board):

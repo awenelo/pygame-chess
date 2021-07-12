@@ -21,11 +21,24 @@ def main():
     gamePieces = pieces.PieceGroup()
     
     # Create 4 pieces and add them to the group
-    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (3,4)))
-    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (4,3)))
-    gamePieces.add(pieces.Rook((8,1)))
-    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (4,5)))
-    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (5,4)))
+    gamePieces.add(pieces.Piece(
+        pygame.image.load("images/default-piece-white.png"),
+        pygame.image.load("images/default-piece-black.png"),
+        True,
+        (3,4)))
+    gamePieces.add(pieces.Piece(
+        pygame.image.load("images/default-piece-white.png"),
+        pygame.image.load("images/default-piece-black.png"),
+        True, (4,3)))
+    gamePieces.add(pieces.Piece(
+        pygame.image.load("images/default-piece-white.png"),
+        pygame.image.load("images/default-piece-black.png"),
+        False, (4,5)))
+    gamePieces.add(pieces.Piece(
+        pygame.image.load("images/default-piece-white.png"),
+        pygame.image.load("images/default-piece-black.png"),
+        False, (5,4)))
+    gamePieces.add(pieces.Rook((8,1), True))
 
     # Create a board object, and pass it the correct width and height, images and center is on the screen
     board = Board(
@@ -83,7 +96,9 @@ def main():
                     if selectedPiece:
                         selectedPiece.select()
                         selectedPiece.highlight_moves(gamePieces, board)
-
+        # Update the game pieces
+        gamePieces.update()
+        
         # Clear the screen
         screen.fill((255,255,255))
 

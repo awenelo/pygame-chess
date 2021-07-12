@@ -3,14 +3,14 @@ import configs
 
 # General piece class, all pieces should have this as their parent
 class Piece(pygame.sprite.Sprite):
-    def __init__(self, deselectedImage, selectedImage, startingsquare):
+    def __init__(self, whiteImage, blackImage, isWhite, startingsquare):
         # Initialize the sprite
         super().__init__()
         
-        # Store images
-        self.image = pygame.image.load(deselectedImage)
-        self.deselectedImage = self.image
-        self.selectedImage = pygame.image.load(selectedImage)
+        # Set our image and store the other
+        self.image = whiteImage if isWhite else blackImage
+        self.whiteImage = whiteImage
+        self.blackImage = blackImage
         
         # Create a rectangle for positioning the image
         self.rect = self.image.get_rect()
@@ -21,6 +21,12 @@ class Piece(pygame.sprite.Sprite):
         # Set the position of the piece
         self.rect.x = self.squarex * configs.SQUARE_SIZE
         self.rect.y = self.squarey * configs.SQUARE_SIZE
+
+        # Store if we're white or black
+        self.white = isWhite
+
+        # Create a variable to store if we should follow the mouse
+        self.followMouse = False
 
     def move(self, squarex, squarey):
         # Move to a square
@@ -34,7 +40,10 @@ class Piece(pygame.sprite.Sprite):
 
     def update(self):
         # Do any animations, should the peice have them
-        pass
+
+        # Move to the mouse, but don't update what square we're on
+        if self.followMouse:
+            self.rect.center = pygame.mouse.get_pos()
     
     def draw(self, screen):
         # Draw the image on the screen at the same position as rect
@@ -49,18 +58,27 @@ class Piece(pygame.sprite.Sprite):
         return True
 
     def select(self):
-        # Set the piece to have the selected image
-        self.image = self.selectedImage
+        # Set the piece to follow the mouse
+        self.followMouse = True
 
     def deselect(self):
-        # Set the piece to have the deselected image
-        self.image = self.deselectedImage
+        # Set the piece to stop following the mouse
+        self.followMouse = False
+        # Reset the position to the last tile we were on
+        self.move(self.squarex, self.squarey)
 
     def highlight_moves(self, gamePieces, board):
         # Highlight all squares that we can legally move to
         for boardTile in board.boardGroup.sprites():
             if self.is_valid_move((boardTile.squarex, boardTile.squarey), gamePieces, board):
                 boardTile.highlight()
+
+    def collide_point(self, point):
+        # Reset the position to the last tile we were on
+        self.move(self.squarex, self.squarey)
+
+        # Then check if we're colliding
+        return self.rect.collidepoint(point)
 
 # Sprite group class, adds some extra functionality to the default class
 class PieceGroup(pygame.sprite.Group):
@@ -70,7 +88,7 @@ class PieceGroup(pygame.sprite.Group):
         # Loops through all the srites until it finds a sprite that collides with the point
         # If no sprites collide with the point, it returns None
         for sprite in self.sprites():
-            if sprite.rect.collidepoint(point):
+            if sprite.collide_point(point):
                 return sprite
         return None
             
