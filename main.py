@@ -21,10 +21,11 @@ def main():
     gamePieces = pieces.PieceGroup()
     
     # Create 4 pieces and add them to the group
-    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (0,0)))
-    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (0,9)))
+    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (3,4)))
+    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (4,3)))
     gamePieces.add(pieces.Rook((8,1)))
-    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (9,9)))
+    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (4,5)))
+    gamePieces.add(pieces.Piece("images/default-piece.png", "images/default-piece-selected.png", (5,4)))
 
     # Create a board object, and pass it the correct width and height, images and center is on the screen
     board = Board(

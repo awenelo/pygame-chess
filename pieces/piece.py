@@ -43,7 +43,11 @@ class Piece(pygame.sprite.Sprite):
     def isValidMove(self, targetSquare, gamePieces, board):
         # With the defualt piece, any move that doesn't overlap another piece is legal
         # We check that by calling spriteCollidedWithPoint on the target square, and checking if it returns none
-        return not gamePieces.spriteCollidedWithPoint((targetSquare[0]*configs.SQUARE_SIZE, targetSquare[1]*configs.SQUARE_SIZE))
+        print(targetSquare)
+        if gamePieces.spriteCollidedWithPoint((targetSquare[0]*configs.SQUARE_SIZE, targetSquare[1]*configs.SQUARE_SIZE)):
+            return False
+        # All checks have passed
+        return True
 
     def select(self):
         # Set the piece to have the selected image

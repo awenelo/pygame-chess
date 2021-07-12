@@ -1,6 +1,7 @@
 import pygame
 
 from .piece import Piece
+import configs
 
 class Rook(Piece):
     # Overwrite the __init__ function to pass different images without input from main.py
@@ -14,13 +15,30 @@ class Rook(Piece):
         if not super().isValidMove(targetSquare, gamePieces, board):
             return False
         
-        # Check that the piece is on the board, if it's not, make the move invalid no matter what
-        if not board.is_on_board(self.rect.center):
-            return False
-
-        # Check that we're moving to a square with the same horizontal or vertical position
-        if self.squarex == targetSquare[0] or self.squarey == targetSquare[1]:
+        # Check that the piece is on the board or if it's moving to the board, if it's not, make the move valid no matter what
+        if not board.is_on_board(self.rect.center) or not board.is_on_board((targetSquare[0]*configs.SQUARE_SIZE, targetSquare[1]*configs.SQUARE_SIZE)):
             return True
 
-        # All checks failed, return False
-        return False
+        # Check that we're moving to a square with the same horizontal or vertical position
+        if not(self.squarex == targetSquare[0] or self.squarey == targetSquare[1]):
+            return False
+
+        #print(min(self.squarey, targetSquare[1]), max(self.squarey, targetSquare[1]))
+
+        # Determine if we're going horizontally or vertically
+        if self.squarey == targetSquare[1]:
+            # We're going horizontally, check every square between us and the target square along x
+            for xpos in range(min(self.squarex, targetSquare[0])+1, max(self.squarex, targetSquare[0])):
+                # For each square, check that we can "exist" in it using the checks in the default isValidMove
+                if not super().isValidMove((xpos, targetSquare[1]), gamePieces, board):
+                    return False
+        else:
+            # We're going vertically, check every square between us and the target square along y
+            for ypos in range(min(self.squarey, targetSquare[1])+1, max(self.squarey, targetSquare[1])):
+                # For each square, check that we can "exist" in it using the checks in the default isValidMove
+                if not super().isValidMove((targetSquare[0], ypos), gamePieces, board):
+                    return False
+        
+
+        # All checks passed, return False
+        return True
