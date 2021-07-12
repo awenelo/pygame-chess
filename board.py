@@ -111,6 +111,11 @@ class Board():
             if not sprite.rect.collidepoint(point):
                 sprite.dehighlight()
 
+    # Clears highlights
+    def remove_highlights(self):
+        for sprite in self.boardGroup.sprites():
+            sprite.dehighlight()
+
     # Checks if a point is on the board
     def is_on_board(self, point):
         for sprite in self.boardGroup.sprites():

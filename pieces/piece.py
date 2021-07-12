@@ -40,10 +40,9 @@ class Piece(pygame.sprite.Sprite):
         # Draw the image on the screen at the same position as rect
         screen.blit(self.image, self.rect)
 
-    def isValidMove(self, targetSquare, gamePieces, board):
+    def is_valid_move(self, targetSquare, gamePieces, board):
         # With the defualt piece, any move that doesn't overlap another piece is legal
         # We check that by calling spriteCollidedWithPoint on the target square, and checking if it returns none
-        print(targetSquare)
         if gamePieces.spriteCollidedWithPoint((targetSquare[0]*configs.SQUARE_SIZE, targetSquare[1]*configs.SQUARE_SIZE)):
             return False
         # All checks have passed
@@ -56,6 +55,12 @@ class Piece(pygame.sprite.Sprite):
     def deselect(self):
         # Set the piece to have the deselected image
         self.image = self.deselectedImage
+
+    def highlight_moves(self, gamePieces, board):
+        # Highlight all squares that we can legally move to
+        for boardTile in board.boardGroup.sprites():
+            if self.is_valid_move((boardTile.squarex, boardTile.squarey), gamePieces, board):
+                boardTile.highlight()
 
 # Sprite group class, adds some extra functionality to the default class
 class PieceGroup(pygame.sprite.Group):

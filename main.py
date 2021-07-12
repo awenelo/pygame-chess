@@ -64,27 +64,25 @@ def main():
                         event.pos[1]//configs.SQUARE_SIZE
                         )
                     # Check if the square we're moving to is valid
-                    if selectedPiece.isValidMove(targetSquare, gamePieces, board):
+                    if selectedPiece.is_valid_move(targetSquare, gamePieces, board):
                         # If so, move to the square
                         selectedPiece.move(targetSquare[0], targetSquare[1])
 
                     # Set the piece to have the deselected image, then clear the selected piece
                     selectedPiece.deselect()
                     selectedPiece = None
+
+                    # Clear the board highlights
+                    board.remove_highlights()
                 else:
                     # We don't have a selected piece, so select one if possible
                     # Determine which piece the mouse is over, and set selectedPiece to that
                     selectedPiece = gamePieces.spriteCollidedWithPoint(event.pos)
 
-                    # If we selected a piece (selectedPiece != None), set the piece to be selected
+                    # If we selected a piece (selectedPiece != None), set the piece to be selected and highlight legal moves
                     if selectedPiece:
                         selectedPiece.select()
-            elif event.type == pygame.MOUSEMOTION:
-                # Highlight the square the mouse is hovering over/dragging over
-                board.highlight_point(event.pos)
-
-                # Dehighlight every other square
-                board.remove_other_highlight_points(event.pos)
+                        selectedPiece.highlight_moves(gamePieces, board)
 
         # Clear the screen
         screen.fill((255,255,255))

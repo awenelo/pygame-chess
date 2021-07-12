@@ -10,9 +10,9 @@ class Rook(Piece):
                          "images/rook-piece-selected.png",
                          startingsquare)
     # Function to check if move is leagal, overwrites the default function
-    def isValidMove(self, targetSquare, gamePieces, board):
+    def is_valid_move(self, targetSquare, gamePieces, board):
         # Check that Piece doesn't have something against moving here
-        if not super().isValidMove(targetSquare, gamePieces, board):
+        if not super().is_valid_move(targetSquare, gamePieces, board):
             return False
         
         # Check that the piece is on the board or if it's moving to the board, if it's not, make the move valid no matter what
@@ -30,13 +30,13 @@ class Rook(Piece):
             # We're going horizontally, check every square between us and the target square along x
             for xpos in range(min(self.squarex, targetSquare[0])+1, max(self.squarex, targetSquare[0])):
                 # For each square, check that we can "exist" in it using the checks in the default isValidMove
-                if not super().isValidMove((xpos, targetSquare[1]), gamePieces, board):
+                if not super().is_valid_move((xpos, targetSquare[1]), gamePieces, board):
                     return False
         else:
             # We're going vertically, check every square between us and the target square along y
             for ypos in range(min(self.squarey, targetSquare[1])+1, max(self.squarey, targetSquare[1])):
                 # For each square, check that we can "exist" in it using the checks in the default isValidMove
-                if not super().isValidMove((targetSquare[0], ypos), gamePieces, board):
+                if not super().is_valid_move((targetSquare[0], ypos), gamePieces, board):
                     return False
         
 
