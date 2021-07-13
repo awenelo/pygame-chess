@@ -101,9 +101,13 @@ def main():
                     board.remove_highlights()
 
                     # If there's still a piece in selectedPiece, probably due to an error, select that one
-                    if len(selectedPiece)>0:
+                    # Repeat until we select one with legal moves
+                    while len(selectedPiece)>0:
                         selectedPiece[0].select()
-                        selectedPiece[0].highlight_moves(gamePieces, board)
+                        if selectedPiece[0].highlight_moves(gamePieces, board):
+                            break
+                        selectedPiece[0].deselect()
+                        selectedPiece.pop(0)
                 else:
                     # We don't have a selected piece, so select one if possible
                     # Determine which piece the mouse is over, and set selectedPiece to that
@@ -111,9 +115,13 @@ def main():
                     selectedPiece = gamePieces.spriteCollidedWithPoint(event.pos)
 
                     # If we selected a piece (selectedPiece != None), set the piece to be selected and highlight legal moves
-                    if len(selectedPiece)>0:
+                    # Repeat until we select one with legal moves
+                    while len(selectedPiece)>0:
                         selectedPiece[0].select()
-                        selectedPiece[0].highlight_moves(gamePieces, board)
+                        if selectedPiece[0].highlight_moves(gamePieces, board):
+                            break
+                        selectedPiece[0].deselect()
+                        selectedPiece.pop(0)
 
             elif event.type == pygame.KEYDOWN:
                 # Check if the key is escape - cancel the move
@@ -127,9 +135,14 @@ def main():
                     board.remove_highlights()
                     
                     # If there's still a piece in selectedPiece, probably due to an error, select that one
-                    if len(selectedPiece)>0:
+                    # Repeat until we select one with legal moves
+                    while len(selectedPiece)>0:
                         selectedPiece[0].select()
-                        selectedPiece[0].highlight_moves(gamePieces, board)
+                        if selectedPiece[0].highlight_moves(gamePieces, board):
+                            break
+                        selectedPiece[0].deselect()
+                        selectedPiece.pop(0)
+                        
                 # Check if the key is return - do the move
                 elif event.key == pygame.K_RETURN:
                     if len(selectedPiece)>0:

@@ -123,19 +123,26 @@ class Piece(pygame.sprite.Sprite):
     def highlight_moves(self, gamePieces, board):
         # Clear the cache of valid moves, setting it to only have our current position
         self.validMoves = [(self.squarex, self.squarey)]
+        # Create variable to store if we've found a move
+        foundMove = False
         # Highlight all squares that we can legally move to
         for boardTile in board.boardGroup.sprites():
             # Check if we can move with capture
             if self.is_valid_move((boardTile.squarex, boardTile.squarey), gamePieces, board, capture=True):
                 # If we can, highlight the tile with capture
                 boardTile.highlight(True)
+                # Record that we've found a valid move
+                foundMove = True
                 # Cache the move
                 self.validMoves.append((boardTile.squarex, boardTile.squarey))
             # Check if we can move without capturing
             if self.is_valid_move((boardTile.squarex, boardTile.squarey), gamePieces, board):
                 # If we can, highlight the tile without capture (overrides tiles highlighted above)
                 boardTile.highlight(False)
-                
+                # Record that we've found a valid move
+                foundMove = True
+        # Return if we've found a move or not
+        return foundMove
 
     def collide_point(self, point):
         # If we're dead, return that we're not colliding
