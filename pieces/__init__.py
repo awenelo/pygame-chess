@@ -4,3 +4,4 @@ from .bishop import *
 from .queen import *
 from .king import *
 from .pawn import *
+from .knight import *
