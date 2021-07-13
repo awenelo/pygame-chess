@@ -3,7 +3,11 @@ import configs
 
 # A single tile of the board, used by Board()
 class BoardTile(pygame.sprite.Sprite):
-    def __init__(self, tile_image, tile_image_selected, tile_top_left):
+    def __init__(self,
+                 tile_image,
+                 tile_image_selected,
+                 tile_image_capturable,
+                 tile_top_left):
         # Initialize the pygame.sprite.Sprite class
         super().__init__()
         
@@ -11,6 +15,7 @@ class BoardTile(pygame.sprite.Sprite):
         self.image = tile_image
         self.normal_image = self.image
         self.highlighted_image = tile_image_selected
+        self.capturable_image = tile_image_capturable
 
         # Store whether or not the tile is highlighted
         self.highlighted = False
@@ -25,21 +30,23 @@ class BoardTile(pygame.sprite.Sprite):
                              tile_top_left[1]*configs.SQUARE_SIZE)
         
     # Function to switch a tile to the highlighted image
-    def highlight(self):
-        self.image = self.highlighted_image
+    def highlight(self, capture=False):
+        self.image = self.highlighted_image if not capture else self.capturable_image
         self.highlighted = True
+        self.capturable = capture
 
     # Function to return a tile to the normal image
     def dehighlight(self):
         self.image = self.normal_image
         self.highlighted = False
+        self.capturable = False
 
     # Function to toggle the highlight on a tile
-    def toggle_highlight(self):
+    def toggle_highlight(self, capture=False):
         if highlighted:
             self.dehighlight()
         else:
-            self.highlight()
+            self.highlight(capture)
     
 
 # The board itself, contains a group of BoardTiles
@@ -58,6 +65,10 @@ class Board():
                  board_tile_white_selected_image,
                  # Image file for highlighted black squares
                  board_tile_black_selected_image,
+                 # Image file for capturable white squares
+                 board_tile_white_capturable_image,
+                 # Image file for capturable black squares
+                 board_tile_black_capturable_image,
                  # Top left point of the board, defaults to (0,0)
                  top_left_point=(0,0)):
         # Create a group for board tiles
@@ -68,6 +79,8 @@ class Board():
         board_tile_black_image = pygame.image.load(board_tile_black_image)
         board_tile_white_selected_image = pygame.image.load(board_tile_white_selected_image)
         board_tile_black_selected_image = pygame.image.load(board_tile_black_selected_image)
+        board_tile_white_capturable_image = pygame.image.load(board_tile_white_capturable_image)
+        board_tile_black_capturable_image = pygame.image.load(board_tile_black_capturable_image)
 
         # Add square_count_width*square_count_height tiles to the group
         for h in range(square_count_height):
@@ -82,16 +95,19 @@ class Board():
                          (board_tile_white_selected_image
                          if w % 2 == h % 2
                          else board_tile_black_selected_image),
+                         (board_tile_white_capturable_image
+                         if w % 2 == h % 2
+                         else board_tile_black_capturable_image),
                         # Determine where the tile should go
                         (top_left_point[0]+w,
                          top_left_point[1]+h)
                     )
                 )
     # Highlights all board tiles that collide with a point
-    def highlight_point(self, point):
+    def highlight_point(self, point, capture=False):
         for sprite in self.boardGroup.sprites():
             if sprite.rect.collidepoint(point):
-                sprite.highlight()
+                sprite.highlight(capture)
 
     # Dehighlights all board tiles that collide with a point
     def dehighlight_point(self, point):
@@ -100,10 +116,10 @@ class Board():
                 sprite.dehighlight()
 
     # Toggles the highlight on all board tiles that collide with a point
-    def toggle_highlight_point(self, point):
+    def toggle_highlight_point(self, point, capture=False):
         for sprite in self.boardGroup.sprites():
             if sprite.rect.collidepoint(point):
-                sprite.toggle_highlight()
+                sprite.toggle_highlight(capture)
 
     # Removes the highlight from all tiles that don't collide with a point
     def remove_other_highlight_points(self, point):

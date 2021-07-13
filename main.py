@@ -48,6 +48,8 @@ def main():
         "images/board-tile-black.png",
         "images/board-tile-white-selected.png",
         "images/board-tile-black-selected.png",
+        "images/board-tile-white-capturable.png",
+        "images/board-tile-black-capturable.png",
         ((configs.WIDTH//configs.SQUARE_SIZE-configs.SQUARE_COUNT_WIDTH)//2,
          (configs.HEIGHT//configs.SQUARE_SIZE-configs.SQUARE_COUNT_HEIGHT)//2
         )
@@ -56,8 +58,8 @@ def main():
     # Create a clock object
     clock = pygame.time.Clock()
 
-    # Create a variable to store the selected piece, set it to None for now
-    selectedPiece = None
+    # Create a variable to store the selected piece
+    selectedPiece = []
 
     # Main loop
     while True:
@@ -69,7 +71,7 @@ def main():
                 raise SystemExit
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Check if a piece has been selected, if no piece has been selected, selectedPiece will resolve to be False
-                if selectedPiece:
+                if len(selectedPiece)>0:
                     # Move selectedPiece to the new location, if the move is valid and selectedPiece is not None
                     # Determine which square we're moving to
                     targetSquare = (
@@ -77,25 +79,26 @@ def main():
                         event.pos[1]//configs.SQUARE_SIZE
                         )
                     # Check if the square we're moving to is valid
-                    if selectedPiece.is_valid_move(targetSquare, gamePieces, board):
+                    if selectedPiece[0].is_valid_move(targetSquare, gamePieces, board, capture=True):
                         # If so, move to the square
-                        selectedPiece.move(targetSquare[0], targetSquare[1])
+                        selectedPiece[0].move(targetSquare[0], targetSquare[1], gamePieces)
 
                     # Set the piece to have the deselected image, then clear the selected piece
-                    selectedPiece.deselect()
-                    selectedPiece = None
+                    selectedPiece[0].deselect()
+                    selectedPiece = []
 
                     # Clear the board highlights
                     board.remove_highlights()
                 else:
                     # We don't have a selected piece, so select one if possible
                     # Determine which piece the mouse is over, and set selectedPiece to that
+                    # If there are multiple possible pieces, use the first one
                     selectedPiece = gamePieces.spriteCollidedWithPoint(event.pos)
 
                     # If we selected a piece (selectedPiece != None), set the piece to be selected and highlight legal moves
-                    if selectedPiece:
-                        selectedPiece.select()
-                        selectedPiece.highlight_moves(gamePieces, board)
+                    if len(selectedPiece)>0:
+                        selectedPiece[0].select()
+                        selectedPiece[0].highlight_moves(gamePieces, board)
         # Update the game pieces
         gamePieces.update()
         
@@ -107,6 +110,10 @@ def main():
         
         # Draw the game pieces
         gamePieces.draw(screen)
+
+        # Re-draw the selectedPiece above everything else, if there is a selected piece
+        if len(selectedPiece)>0:
+            selectedPiece[0].draw(screen)
 
         # Show the screen
         pygame.display.flip()
