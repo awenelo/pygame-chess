@@ -38,7 +38,10 @@ def main():
         pygame.image.load("images/default-piece-white.png"),
         pygame.image.load("images/default-piece-black.png"),
         False, (5,4)))
-    gamePieces.add(pieces.Rook((8,1), True))
+    gamePieces.add(pieces.Rook((1,1), False))
+    gamePieces.add(pieces.Rook((8,1), False))
+    gamePieces.add(pieces.Rook((1,8), True))
+    gamePieces.add(pieces.Rook((8,8), True))
 
     # Create a board object, and pass it the correct width and height, images and center is on the screen
     board = Board(
