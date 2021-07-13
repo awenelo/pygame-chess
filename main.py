@@ -89,6 +89,11 @@ def main():
 
                     # Clear the board highlights
                     board.remove_highlights()
+
+                    # If there's still a piece in selectedPiece, probably due to an error, select that one
+                    if len(selectedPiece)>0:
+                        selectedPiece[0].select()
+                        selectedPiece[0].highlight_moves(gamePieces, board)
                 else:
                     # We don't have a selected piece, so select one if possible
                     # Determine which piece the mouse is over, and set selectedPiece to that
@@ -99,6 +104,47 @@ def main():
                     if len(selectedPiece)>0:
                         selectedPiece[0].select()
                         selectedPiece[0].highlight_moves(gamePieces, board)
+
+            elif event.type == pygame.KEYDOWN:
+                # Check if the key is escape - cancel the move
+                if event.key == pygame.K_ESCAPE:
+                    # If it is, clear the selected piece, if there's a piece selected
+                    if len(selectedPiece)>0:
+                        selectedPiece[0].deselect()
+                        selectedPiece.pop(0)
+                        
+                    # Clear the board highlights
+                    board.remove_highlights()
+                    
+                    # If there's still a piece in selectedPiece, probably due to an error, select that one
+                    if len(selectedPiece)>0:
+                        selectedPiece[0].select()
+                        selectedPiece[0].highlight_moves(gamePieces, board)
+                # Check if the key is return - do the move
+                elif event.key == pygame.K_RETURN:
+                    if len(selectedPiece)>0:
+                        # Fix selectedPiece in it's current positon, if the move is valid and selectedPiece is not None
+                        # Determine which square we're moving to
+                        targetSquare = (
+                            selectedPiece[0].rect.x//configs.SQUARE_SIZE,
+                            selectedPiece[0].rect.y//configs.SQUARE_SIZE
+                            )
+                        # Check if the square we're moving to is valid
+                        if selectedPiece[0].is_valid_move(targetSquare, gamePieces, board, capture=True):
+                            # If so, move to the square
+                            selectedPiece[0].move(targetSquare[0], targetSquare[1], gamePieces)
+
+                        # Set the piece to have the deselected image, then clear the selected piece
+                        selectedPiece[0].deselect()
+                        selectedPiece.pop(0)
+
+                        # Clear the board highlights
+                        board.remove_highlights()
+
+                        # If there's still a piece in selectedPiece, probably due to an error, select that one
+                        if len(selectedPiece)>0:
+                            selectedPiece[0].select()
+                            selectedPiece[0].highlight_moves(gamePieces, board)
                     
         # Update the game pieces
         gamePieces.update(gamePieces, board)

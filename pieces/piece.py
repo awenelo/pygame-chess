@@ -83,6 +83,10 @@ class Piece(pygame.sprite.Sprite):
                 # Move to the closest move
                 self.rect.x = closestMove[0]*configs.SQUARE_SIZE
                 self.rect.y = closestMove[1]*configs.SQUARE_SIZE
+        else:
+            # If we're not following the mouse, snap to our square
+            self.rect.x = self.squarex*configs.SQUARE_SIZE
+            self.rect.y = self.squarey*configs.SQUARE_SIZE
                 
                     
     
