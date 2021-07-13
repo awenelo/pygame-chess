@@ -42,6 +42,9 @@ def main():
     gamePieces.add(pieces.Queen((4,8), True))
     gamePieces.add(pieces.King((5,1), False))
     gamePieces.add(pieces.King((5,8), True))
+    for position in range(1,9):
+        gamePieces.add(pieces.Pawn((position, 2), False))
+        gamePieces.add(pieces.Pawn((position, 7), True))
 
     # Create a board object, and pass it the correct width and height, images and center is on the screen
     board = Board(
