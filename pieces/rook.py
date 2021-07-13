@@ -39,5 +39,5 @@ class Rook(Piece):
                     return False
         
 
-        # All checks passed, return False
+        # All checks passed, return True
         return True

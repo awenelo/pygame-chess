@@ -72,11 +72,11 @@ def main():
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 # Check if a piece has been selected, if no piece has been selected, selectedPiece will resolve to be False
                 if len(selectedPiece)>0:
-                    # Move selectedPiece to the new location, if the move is valid and selectedPiece is not None
+                    # Fix selectedPiece in it's current positon, if the move is valid and selectedPiece is not None
                     # Determine which square we're moving to
                     targetSquare = (
-                        event.pos[0]//configs.SQUARE_SIZE,
-                        event.pos[1]//configs.SQUARE_SIZE
+                        selectedPiece[0].rect.x//configs.SQUARE_SIZE,
+                        selectedPiece[0].rect.y//configs.SQUARE_SIZE
                         )
                     # Check if the square we're moving to is valid
                     if selectedPiece[0].is_valid_move(targetSquare, gamePieces, board, capture=True):
@@ -85,7 +85,7 @@ def main():
 
                     # Set the piece to have the deselected image, then clear the selected piece
                     selectedPiece[0].deselect()
-                    selectedPiece = []
+                    selectedPiece.pop(0)
 
                     # Clear the board highlights
                     board.remove_highlights()
@@ -99,8 +99,9 @@ def main():
                     if len(selectedPiece)>0:
                         selectedPiece[0].select()
                         selectedPiece[0].highlight_moves(gamePieces, board)
+                    
         # Update the game pieces
-        gamePieces.update()
+        gamePieces.update(gamePieces, board)
         
         # Clear the screen
         screen.fill((255,255,255))

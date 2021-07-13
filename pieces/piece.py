@@ -30,6 +30,13 @@ class Piece(pygame.sprite.Sprite):
 
         # Store if we're dead or not
         self.dead = False
+        
+        # Store the last known mouse position
+        self.lastMousePos = pygame.mouse.get_pos()
+
+        # Create a cache of valid moves
+        self.validMoves = []
+
 
     def move(self, squarex, squarey, gamePieces):
         # Kill any other pieces we will overlap with
@@ -44,18 +51,40 @@ class Piece(pygame.sprite.Sprite):
         # Store what square we're on
         self.squarex = squarex
         self.squarey = squarey
-
-    def update(self):
+        
+    def update(self, gamePieces, board):
         # Do any animations, should the peice have them
 
-        # Move to the mouse, but don't update what square we're on
+        # Move to the mouse if needed, but don't update what square we're on
         if self.followMouse:
-            self.rect.center = pygame.mouse.get_pos()
+            # Get the mouse's position
+            mousePos = pygame.mouse.get_pos()
 
-        # If we're dead, force us to the top-left corner
-        #if self.dead:
-        #    self.rect.center = (0,0)
-        #    self.squarex, self.squarey = (0,0)
+            # Check that the mouse's position isn't the same as the last time we ran
+            # If it is, return without doing any calculations, since our situation is the same as before
+            if mousePos != self.lastMousePos:
+                self.lastMousePos = mousePos
+                mouseSquare = (mousePos[0]//configs.SQUARE_SIZE, mousePos[1]//configs.SQUARE_SIZE)
+                # If we're not over a legal move, snap to the nearest one
+                # Determine the distance of each move from the mouse point using the Pythagorean Theorem
+                moveDistances = {}
+                for move in self.validMoves:
+                    # Get the distance from the mouse to the center of each tile along x and y
+                    moveXDif = abs((move[0]*configs.SQUARE_SIZE+configs.SQUARE_SIZE/2)-mousePos[0])
+                    moveYDif = abs((move[1]*configs.SQUARE_SIZE+configs.SQUARE_SIZE/2)-mousePos[1])
+                    # Caluclulate the distance between the mouse and the tile
+                    moveDif = (moveXDif**2+moveYDif**2)**0.5
+                    # Store the move
+                    moveDistances[moveDif] = move
+                    
+                # Determine the closest move and set out position to that
+                closestMove = moveDistances[min(moveDistances)]
+                
+                # Move to the closest move
+                self.rect.x = closestMove[0]*configs.SQUARE_SIZE
+                self.rect.y = closestMove[1]*configs.SQUARE_SIZE
+                
+                    
     
     def draw(self, screen):
         # Draw the image on the screen at the same position as rect
@@ -73,6 +102,7 @@ class Piece(pygame.sprite.Sprite):
                     if sprite.white != self.white:
                         return True
             return False
+        
         # All checks have passed
         return True
 
@@ -87,12 +117,16 @@ class Piece(pygame.sprite.Sprite):
         self.move(self.squarex, self.squarey, PieceGroup())
 
     def highlight_moves(self, gamePieces, board):
+        # Clear the cache of valid moves, setting it to only have our current position
+        self.validMoves = [(self.squarex, self.squarey)]
         # Highlight all squares that we can legally move to
         for boardTile in board.boardGroup.sprites():
             # Check if we can move with capture
             if self.is_valid_move((boardTile.squarex, boardTile.squarey), gamePieces, board, capture=True):
                 # If we can, highlight the tile with capture
                 boardTile.highlight(True)
+                # Cache the move
+                self.validMoves.append((boardTile.squarex, boardTile.squarey))
             # Check if we can move without capturing
             if self.is_valid_move((boardTile.squarex, boardTile.squarey), gamePieces, board):
                 # If we can, highlight the tile without capture (overrides tiles highlighted above)
@@ -103,11 +137,15 @@ class Piece(pygame.sprite.Sprite):
         # If we're dead, return that we're not colliding
         if self.dead:
             return False
-        # Reset the position to the last tile we were on, using a new PieceGroup to satisfy the gamePieces argument
-        self.move(self.squarex, self.squarey, PieceGroup())
+        
+        # Make a copy of our rectangle
+        newRect = self.rect.copy()
 
-        # Then check if we're colliding
-        return self.rect.collidepoint(point)
+        # Move it to the square we're on
+        newRect.topleft = (self.squarex*configs.SQUARE_SIZE, self.squarey*configs.SQUARE_SIZE)
+        
+        # Then use it to check if we're colliding
+        return newRect.collidepoint(point)
 
     def capture(self):
         # Kills the piece, leaving it in place
@@ -133,4 +171,9 @@ class PieceGroup(pygame.sprite.Group):
     def draw(self, screen):
         for sprite in self.sprites():
             sprite.draw(screen)
+
+    # Overwrite the update function to add extra parameters
+    def update(self, gamePieces, board):
+        for sprite in self.sprites():
+            sprite.update(gamePieces, board)
     
