@@ -25,11 +25,11 @@ def main():
         pygame.image.load("images/default-piece-white.png"),
         pygame.image.load("images/default-piece-black.png"),
         False,
-        (4,1)))
+        (0,0)))
     gamePieces.add(pieces.Piece(
         pygame.image.load("images/default-piece-white.png"),
         pygame.image.load("images/default-piece-black.png"),
-        True, (4,8)))
+        True, (9,9)))
     gamePieces.add(pieces.Rook((1,1), False))
     gamePieces.add(pieces.Rook((8,1), False))
     gamePieces.add(pieces.Rook((1,8), True))
@@ -38,6 +38,8 @@ def main():
     gamePieces.add(pieces.Bishop((6,1), False))
     gamePieces.add(pieces.Bishop((3,8), True))
     gamePieces.add(pieces.Bishop((6,8), True))
+    gamePieces.add(pieces.Queen((4,1), False))
+    gamePieces.add(pieces.Queen((4,8), True))
 
     # Create a board object, and pass it the correct width and height, images and center is on the screen
     board = Board(
