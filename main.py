@@ -40,6 +40,8 @@ def main():
     gamePieces.add(pieces.Bishop((6,8), True))
     gamePieces.add(pieces.Queen((4,1), False))
     gamePieces.add(pieces.Queen((4,8), True))
+    gamePieces.add(pieces.King((5,1), False))
+    gamePieces.add(pieces.King((5,8), True))
 
     # Create a board object, and pass it the correct width and height, images and center is on the screen
     board = Board(
