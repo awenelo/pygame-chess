@@ -20,28 +20,24 @@ def main():
     # Create a group to store game pieces
     gamePieces = pieces.PieceGroup()
     
-    # Create 4 pieces and add them to the group
+    # Create pieces
     gamePieces.add(pieces.Piece(
         pygame.image.load("images/default-piece-white.png"),
         pygame.image.load("images/default-piece-black.png"),
-        True,
-        (3,4)))
+        False,
+        (4,1)))
     gamePieces.add(pieces.Piece(
         pygame.image.load("images/default-piece-white.png"),
         pygame.image.load("images/default-piece-black.png"),
-        True, (4,3)))
-    gamePieces.add(pieces.Piece(
-        pygame.image.load("images/default-piece-white.png"),
-        pygame.image.load("images/default-piece-black.png"),
-        False, (4,5)))
-    gamePieces.add(pieces.Piece(
-        pygame.image.load("images/default-piece-white.png"),
-        pygame.image.load("images/default-piece-black.png"),
-        False, (5,4)))
+        True, (4,8)))
     gamePieces.add(pieces.Rook((1,1), False))
     gamePieces.add(pieces.Rook((8,1), False))
     gamePieces.add(pieces.Rook((1,8), True))
     gamePieces.add(pieces.Rook((8,8), True))
+    gamePieces.add(pieces.Bishop((3,1), False))
+    gamePieces.add(pieces.Bishop((6,1), False))
+    gamePieces.add(pieces.Bishop((3,8), True))
+    gamePieces.add(pieces.Bishop((6,8), True))
 
     # Create a board object, and pass it the correct width and height, images and center is on the screen
     board = Board(
