@@ -74,13 +74,31 @@ class Board():
         # Create a group for board tiles
         self.boardGroup = pygame.sprite.Group()
 
-        # Load the images
-        board_tile_white_image = pygame.image.load(board_tile_white_image)
-        board_tile_black_image = pygame.image.load(board_tile_black_image)
-        board_tile_white_selected_image = pygame.image.load(board_tile_white_selected_image)
-        board_tile_black_selected_image = pygame.image.load(board_tile_black_selected_image)
-        board_tile_white_capturable_image = pygame.image.load(board_tile_white_capturable_image)
-        board_tile_black_capturable_image = pygame.image.load(board_tile_black_capturable_image)
+        # Load the images, and scale them to size
+        board_tile_white_image = pygame.transform.smoothscale(
+            pygame.image.load(board_tile_white_image),
+            (configs.SQUARE_SIZE, configs.SQUARE_SIZE)
+            )
+        board_tile_black_image = pygame.transform.smoothscale(
+            pygame.image.load(board_tile_black_image),
+            (configs.SQUARE_SIZE, configs.SQUARE_SIZE)
+            )
+        board_tile_white_selected_image = pygame.transform.smoothscale(
+            pygame.image.load(board_tile_white_selected_image),
+            (configs.SQUARE_SIZE, configs.SQUARE_SIZE)
+            )
+        board_tile_black_selected_image = pygame.transform.smoothscale(
+            pygame.image.load(board_tile_black_selected_image),
+            (configs.SQUARE_SIZE, configs.SQUARE_SIZE)
+            )
+        board_tile_white_capturable_image = pygame.transform.smoothscale(
+            pygame.image.load(board_tile_white_capturable_image),
+            (configs.SQUARE_SIZE, configs.SQUARE_SIZE)
+            )
+        board_tile_black_capturable_image = pygame.transform.smoothscale(
+            pygame.image.load(board_tile_black_capturable_image),
+            (configs.SQUARE_SIZE, configs.SQUARE_SIZE)
+            )
 
         # Add square_count_width*square_count_height tiles to the group
         for h in range(square_count_height):

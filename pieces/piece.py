@@ -6,6 +6,11 @@ class Piece(pygame.sprite.Sprite):
     def __init__(self, whiteImage, blackImage, isWhite, startingsquare):
         # Initialize the sprite
         super().__init__()
+
+        # Scale the images to the correct size
+        whiteImage = pygame.transform.smoothscale(whiteImage, (configs.SQUARE_SIZE, configs.SQUARE_SIZE))
+        blackImage = pygame.transform.smoothscale(blackImage, (configs.SQUARE_SIZE, configs.SQUARE_SIZE))
+                                                  
         
         # Set our image and store the other
         self.image = whiteImage if isWhite else blackImage
