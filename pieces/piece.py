@@ -62,6 +62,10 @@ class Piece(pygame.sprite.Sprite):
         # Store what square we're on
         self.squarex = squarex
         self.squarey = squarey
+
+    def copy(self):
+        # Return a copy of us
+        return Piece(self.whiteImage, self.blackImage, self.white, (self.squarex, self.squarey))
         
     def update(self, gamePieces, board):
         # Do any animations, should the peice have them

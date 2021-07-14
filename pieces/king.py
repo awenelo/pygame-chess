@@ -11,12 +11,24 @@ class King(Piece):
                          isWhite,
                          startingsquare)
         # Store the white and black check images
-        self.whiteCheckImage = pygame.image.load("images/king-piece-white-check.png")
-        self.blackCheckImage = pygame.image.load("images/king-piece-black-check.png")
+        self.whiteCheckImage = pygame.transform.smoothscale(
+            pygame.image.load("images/king-piece-white-check.png"),
+            (configs.SQUARE_SIZE, configs.SQUARE_SIZE)
+            )
+        self.blackCheckImage = pygame.transform.smoothscale(
+            pygame.image.load("images/king-piece-black-check.png"),
+            (configs.SQUARE_SIZE, configs.SQUARE_SIZE)
+            )
 
         # Store the white and black checkmate images
-        self.whiteCheckmateImage = pygame.image.load("images/king-piece-white-checkmate.png")
-        self.blackCheckmateImage = pygame.image.load("images/king-piece-black-checkmate.png")
+        self.whiteCheckmateImage = pygame.transform.smoothscale(
+            pygame.image.load("images/king-piece-white-checkmate.png"),
+            (configs.SQUARE_SIZE, configs.SQUARE_SIZE)
+            )
+        self.blackCheckmateImage = pygame.transform.smoothscale(
+            pygame.image.load("images/king-piece-black-checkmate.png"),
+            (configs.SQUARE_SIZE, configs.SQUARE_SIZE)
+            )
 
         # Store that we are a king
         self.isKing = True
@@ -74,16 +86,11 @@ class King(Piece):
         threats = []
         self.image = self.whiteImage if self.white else self.blackImage
 
-        # For each piece, check if moving to our square is a valid move for them
-        # If it is, then we're in check
-        for sprite in gamePieces.sprites():
-            # If the piece is on our side, skip checking any further
-            if sprite.white == self.white:
-                continue
-            if sprite.is_valid_move((self.squarex, self.squarey), gamePieces, board, capture=True):
-                self.image = self.whiteCheckImage if self.white else self.blackCheckImage
-                self.incheck = True
-                threats.append(sprite)
+        # Use in_check to check if we're in check
+        threats = self.in_check((self.squarex, self.squarey), gamePieces, board)
+
+        # If there is a threat, set us to incheck
+        self.incheck = len(threats)>0
 
         # If we're in check, check if there's an escape
         if self.incheck:
@@ -95,7 +102,7 @@ class King(Piece):
                         # If there is an escape, record that there was an escape and break
                         self.checkmate = False
                         break
-            # If there's no escape, check if the threat can be removed
+            # If there's no escape, check if the threat can be removed, or we can block the threat
             if self.checkmate:
                 # We can only remove 1 threat, if there's multiple, we're in checkmate no matter what
                 if len(threats)>0 and not len(threats)>1:
@@ -106,10 +113,40 @@ class King(Piece):
                             if sprite.is_valid_move((threats[0].squarex, threats[0].squarey), gamePieces, board, capture=True):
                                 # If the piece can capture it, cancel being in checkmate, set our image to check and exit
                                 self.checkmate = False
-                                self.image = self.whiteCheckImage if self.white else self.blackCheckImage
                                 break
-            if self.checkmate:
-                # If not, set our image to checkmate
-                self.image = self.whiteCheckmateImage if self.white else self.blackCheckmateImage
+                            # Check that there's not a square we can move to to cancel check
+                            for boardTile in board.boardGroup.sprites():
+                                if sprite.is_valid_move((boardTile.squarex, boardTile.squarey), gamePieces, board, capture=True):
+                                    # If it's a valid move, create a copy of gamePieces, with the sprite in both the new and old positions
+                                    gamePiecesCopy = gamePieces.copy()
+                                    spriteCopy = sprite.copy()
+                                    spriteCopy.move(boardTile.squarex, boardTile.squarey, gamePiecesCopy)
+                                    gamePiecesCopy.add(spriteCopy)
+                                    if len(self.in_check((self.squarex, self.squarey), gamePiecesCopy, board)) == 0:
+                                        # We've found a way to escape, break and cancel being in checkmate
+                                        self.checkmate = False
+                                        break
+                            # If we've found a way out of checkmate, break
+                            if not self.checkmate:
+                                break
+                                
+        # Update our image, if needed
+        if self.checkmate:
+            self.image = self.whiteCheckmateImage if self.white else self.blackCheckmateImage
+        elif self.incheck:
+            self.image = self.whiteCheckImage if self.white else self.blackCheckImage
+
+    def in_check(self, square, gamePieces, board):
+        # Create a variable to store threats
+        threats = []
+        # For each piece, check if moving to our square is a valid move for them
+        # If it is, then we're in check
+        for sprite in gamePieces.sprites():
+            # If the piece is on our side, skip checking any further
+            if sprite.white == self.white:
+                continue
+            if sprite.is_valid_move(square, gamePieces, board, capture=True):
+                threats.append(sprite)
+        return threats
         
         
