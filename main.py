@@ -21,15 +21,15 @@ def main():
     gamePieces = pieces.PieceGroup()
     
     # Create pieces
-    gamePieces.add(pieces.Piece(
-        pygame.image.load("images/default-piece-white.png"),
-        pygame.image.load("images/default-piece-black.png"),
-        False,
-        (0,0)))
-    gamePieces.add(pieces.Piece(
-        pygame.image.load("images/default-piece-white.png"),
-        pygame.image.load("images/default-piece-black.png"),
-        True, (9,9)))
+    ##gamePieces.add(pieces.Piece(
+    ##    pygame.image.load("images/default-piece-white.png"),
+    ##    pygame.image.load("images/default-piece-black.png"),
+    ##    False,
+    ##    (0,0)))
+    ##gamePieces.add(pieces.Piece(
+    ##    pygame.image.load("images/default-piece-white.png"),
+    ##    pygame.image.load("images/default-piece-black.png"),
+    ##    True, (9,9)))
     gamePieces.add(pieces.Rook((1,1), False))
     gamePieces.add(pieces.Rook((8,1), False))
     gamePieces.add(pieces.Rook((1,8), True))

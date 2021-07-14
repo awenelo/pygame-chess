@@ -39,6 +39,9 @@ class Piece(pygame.sprite.Sprite):
 
 
     def move(self, squarex, squarey, gamePieces):
+        # Prevent moving if we're captured
+        if self.dead:
+            return
         # Kill any other pieces we will overlap with
         for sprite in gamePieces.spriteCollidedWithPoint((squarex*configs.SQUARE_SIZE, squarey*configs.SQUARE_SIZE)):
             sprite.kill()
@@ -96,6 +99,9 @@ class Piece(pygame.sprite.Sprite):
             screen.blit(self.image, self.rect)
 
     def is_valid_move(self, targetSquare, gamePieces, board, capture=False):
+        # If we're captured, we can't move
+        if self.dead:
+            return False
         # With the defualt piece, any move that doesn't overlap another piece is legal
         # We check that by calling spriteCollidedWithPoint on the target square
         foundPieces = gamePieces.spriteCollidedWithPoint((targetSquare[0]*configs.SQUARE_SIZE, targetSquare[1]*configs.SQUARE_SIZE))
