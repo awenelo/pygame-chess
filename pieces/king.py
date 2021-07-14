@@ -35,8 +35,8 @@ class King(Piece):
 
     # Function to check if move is leagal, overwrites the default function
     def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False):
-        # Check that Piece doesn't have something against moving here
-        if not super().is_valid_move(targetSquare, gamePieces, board, capture=capture):
+        # Check that Piece doesn't have something against moving here, ignoreCheck is always False, since we have our own check handling code
+        if not super().is_valid_move(targetSquare, gamePieces, board, capture=capture, ignoreCheck=True):
             return False
 
         # Check that we're moving to a square that's at most +1/-1 away in both directions
@@ -98,7 +98,7 @@ class King(Piece):
             self.checkmate = True
             for xdiff in [-1, 0, 1]:
                 for ydiff in [-1, 0, 1]:
-                    if self.is_valid_move((xdiff, ydiff), gamePieces, board, capture=True):
+                    if self.is_valid_move((self.squarex+xdiff, self.squarey+ydiff), gamePieces, board, capture=True):
                         # If there is an escape, record that there was an escape and break
                         self.checkmate = False
                         break
@@ -120,7 +120,7 @@ class King(Piece):
                                     # If it's a valid move, create a copy of gamePieces, with the sprite in both the new and old positions
                                     gamePiecesCopy = gamePieces.copy()
                                     spriteCopy = sprite.copy()
-                                    spriteCopy.move(boardTile.squarex, boardTile.squarey, gamePiecesCopy)
+                                    spriteCopy.move(boardTile.squarex, boardTile.squarey, gamePiecesCopy, capture=False)
                                     gamePiecesCopy.add(spriteCopy)
                                     if len(self.in_check((self.squarex, self.squarey), gamePiecesCopy, board)) == 0:
                                         # We've found a way to escape, break and cancel being in checkmate
@@ -145,7 +145,8 @@ class King(Piece):
             # If the piece is on our side, skip checking any further
             if sprite.white == self.white:
                 continue
-            if sprite.is_valid_move(square, gamePieces, board, capture=True):
+            # Check if the sprite is a king, if so, we need to pass ignoreCheck
+            if sprite.is_valid_move(square, gamePieces, board, capture=True, ignoreCheck=True):
                 threats.append(sprite)
         return threats
         

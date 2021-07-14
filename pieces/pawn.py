@@ -12,11 +12,7 @@ class Pawn(Piece):
                          startingsquare)
 
     # Function to check if move is leagal, overwrites the default function
-    def is_valid_move(self, targetSquare, gamePieces, board, capture=False):
-        # Check that Piece doesn't have something against moving here
-        if not super().is_valid_move(targetSquare, gamePieces, board, capture=capture):
-            return False
-
+    def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False):
         # Check that we're moving 1 forward and at most 1 to the left or right
         # Figure out if we should be moving in the + or - y direction
         yDirection = self.white*2-1
@@ -45,6 +41,10 @@ class Pawn(Piece):
         if self.squarex != targetSquare[0]:
             if not(captureTargetSquare and not noCaptureTargetSquare):
                 return False
+
+        # Check that Piece doesn't have something against moving here
+        if not super().is_valid_move(targetSquare, gamePieces, board, capture=capture, ignoreCheck=ignoreCheck):
+            return False
 
         # All checks have passed, return True
         return True

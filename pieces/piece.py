@@ -46,13 +46,14 @@ class Piece(pygame.sprite.Sprite):
         self.isKing = False
 
 
-    def move(self, squarex, squarey, gamePieces):
+    def move(self, squarex, squarey, gamePieces, capture=True):
         # Prevent moving if we're captured
         if self.dead:
             return
-        # Kill any other pieces we will overlap with
-        for sprite in gamePieces.spriteCollidedWithPoint((squarex*configs.SQUARE_SIZE, squarey*configs.SQUARE_SIZE)):
-            sprite.kill()
+        # Kill any other pieces we will overlap with, if capture is True
+        if capture:
+            for sprite in gamePieces.spriteCollidedWithPoint((squarex*configs.SQUARE_SIZE, squarey*configs.SQUARE_SIZE)):
+                sprite.kill()
             
         # Move to a square
         # Set the position of the piece
@@ -110,7 +111,7 @@ class Piece(pygame.sprite.Sprite):
         if not self.dead:
             screen.blit(self.image, self.rect)
 
-    def is_valid_move(self, targetSquare, gamePieces, board, capture=False):
+    def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False):
         # If we're captured, we can't move
         if self.dead:
             return False
@@ -118,16 +119,35 @@ class Piece(pygame.sprite.Sprite):
         # Check that we're not trying to move to the same place
         if self.squarex == targetSquare[0] and self.squarey == targetSquare[1]:
             return False
+                
         # With the defualt piece, any move that doesn't overlap another piece is legal
         # We check that by calling spriteCollidedWithPoint on the target square
         foundPieces = gamePieces.spriteCollidedWithPoint((targetSquare[0]*configs.SQUARE_SIZE, targetSquare[1]*configs.SQUARE_SIZE))
         if len(foundPieces)>0:
-            # If we can capture pieces, check each piece for if it's the enemy. If it is, the move is legal
+            # If we can capture pieces, check each piece for if it's the enemy. If it is, the move is probably legal
+            # Store if the tile is capturable
+            capturable = False
             if capture:
                 for sprite in foundPieces:
                     if sprite.white != self.white:
-                        return True
-            return False
+                        capturable = True
+                        break
+            if not capturable:
+                return False
+        
+        # Check that we're not putting our king/kings in check, if ignoreCheck is False
+        if not ignoreCheck: 
+            kings = gamePieces.get_kings(self.white)
+            # Make a copy of our move and game pieces
+            gamePiecesCopy = gamePieces.copy()
+            spriteCopy = self.copy()
+            self.remove(gamePiecesCopy)
+            spriteCopy.move(targetSquare[0], targetSquare[1], gamePiecesCopy, capture=False)
+            gamePiecesCopy.add(spriteCopy)
+            for king in kings:
+                if len(king.in_check((king.squarex, king.squarey), gamePiecesCopy, board))>0:
+                    return False
+                
         
         # All checks have passed
         return True
@@ -209,4 +229,13 @@ class PieceGroup(pygame.sprite.Group):
     def update(self, gamePieces, board):
         for sprite in self.sprites():
             sprite.update(gamePieces, board)
+
+
+    # Get kings
+    def get_kings(self, white):
+        kings = []
+        for sprite in self.sprites():
+            if sprite.isKing and sprite.white == white:
+                kings.append(sprite)
+        return kings
     
