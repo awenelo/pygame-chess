@@ -37,6 +37,9 @@ class Piece(pygame.sprite.Sprite):
         # Create a cache of valid moves
         self.validMoves = []
 
+        # Store that we are not a king
+        self.isKing = False
+
 
     def move(self, squarex, squarey, gamePieces):
         # Prevent moving if we're captured
@@ -101,6 +104,10 @@ class Piece(pygame.sprite.Sprite):
     def is_valid_move(self, targetSquare, gamePieces, board, capture=False):
         # If we're captured, we can't move
         if self.dead:
+            return False
+
+        # Check that we're not trying to move to the same place
+        if self.squarex == targetSquare[0] and self.squarey == targetSquare[1]:
             return False
         # With the defualt piece, any move that doesn't overlap another piece is legal
         # We check that by calling spriteCollidedWithPoint on the target square

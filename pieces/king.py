@@ -14,8 +14,11 @@ class King(Piece):
         self.whiteCheckImage = pygame.image.load("images/king-piece-white-check.png")
         self.blackCheckImage = pygame.image.load("images/king-piece-black-check.png")
 
+        # Store that we are a king
+        self.isKing = True
+
     # Function to check if move is leagal, overwrites the default function
-    def is_valid_move(self, targetSquare, gamePieces, board, capture=False):
+    def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False):
         # Check that Piece doesn't have something against moving here
         if not super().is_valid_move(targetSquare, gamePieces, board, capture=capture):
             return False
@@ -25,6 +28,33 @@ class King(Piece):
         if abs(self.squarex-targetSquare[0])>1 or abs(self.squarey-targetSquare[1])>1:
             return False
         
+        # If we're told to ignore check, return True since the check for if we would be in check is the last check
+        if ignoreCheck:
+            return True
+        
+        # Check that the square we're moving to won't put us in check
+        # For each piece, check if moving to our square is a valid move for them
+        # If it is, then we're in check
+        # Move us to target square, to simulate our presence there and store where we were before
+        pastSquare = (self.squarex, self.squarey)
+        self.squarex, self.squarey = targetSquare
+        for sprite in gamePieces.sprites():
+            # If the piece is on our side, skip checking any further
+            if sprite.white == self.white:
+                continue
+
+            # Check if the sprite is a king, if so, we need to pass ignoreCheck
+            ignoreCheckDict = {}
+            if sprite.isKing:
+                ignoreCheckDict["ignoreCheck"] = True
+            if sprite.is_valid_move(targetSquare, gamePieces, board, capture=True, **ignoreCheckDict):
+                # If it is a valid move for another piece, we can't move to that square
+                # Move us back
+                self.squarex, self.squarey = pastSquare
+                return False
+        # We're not going to be in check, move us back
+        self.squarex, self.squarey = pastSquare
+        
         # The checks have passed, return True
         return True
 
@@ -33,9 +63,20 @@ class King(Piece):
         # Do Piece.update()
         super().update(gamePieces, board)
 
+        # Clear our check state
+        self.incheck = False
+        self.image = self.whiteImage if self.white else self.blackImage
+
         # For each piece, check if moving to our square is a valid move for them
         # If it is, then we're in check
         for sprite in gamePieces.sprites():
+            # If the piece is on our side, skip checking any further
+            if sprite.white == self.white:
+                continue
             if sprite.is_valid_move((self.squarex, self.squarey), gamePieces, board, capture=True):
                 self.image = self.whiteCheckImage if self.white else self.blackCheckImage
+                self.incheck = True
+                break
+        
+        
         
