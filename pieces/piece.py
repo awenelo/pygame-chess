@@ -119,6 +119,11 @@ class Piece(pygame.sprite.Sprite):
         # Check that we're not trying to move to the same place
         if self.squarex == targetSquare[0] and self.squarey == targetSquare[1]:
             return False
+
+        # Check that we're not trying to move off the board
+        if not board.is_on_board((targetSquare[0]*configs.SQUARE_SIZE, targetSquare[1]*configs.SQUARE_SIZE)):
+            return False
+        
                 
         # With the defualt piece, any move that doesn't overlap another piece is legal
         # We check that by calling spriteCollidedWithPoint on the target square
