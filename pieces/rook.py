@@ -5,15 +5,22 @@ import configs
 
 class Rook(Piece):
     # Overwrite the __init__ function to pass different images
-    def __init__(self, startingsquare, isWhite, hasmoved=False):
+    def __init__(self, startingsquare, isWhite, hasmoved=False, promotion=None):
         super().__init__(pygame.image.load("images/rook-piece-white.png"),
                          pygame.image.load("images/rook-piece-black.png"),
                          isWhite,
                          startingsquare,
-                         hasmoved=hasmoved)
+                         hasmoved=hasmoved,
+                         promotion=promotion)
         
     # Function to check if move is leagal, overwrites the default function
     def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False):
+        # If we're in promotion mode, we can only move to that square
+        if self.promotion is not None:
+            if targetSquare == self.promotion:
+                return True
+            else:
+                return False
         # Check that we're moving to a square with the same horizontal or vertical position
         if not(self.squarex == targetSquare[0] or self.squarey == targetSquare[1]):
             return False

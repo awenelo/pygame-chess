@@ -5,12 +5,13 @@ import configs
 
 class King(Piece):
     # Overwrite the __init__ function to pass different images
-    def __init__(self, startingsquare, isWhite, hasmoved=False):
+    def __init__(self, startingsquare, isWhite, hasmoved=False, promotion=None):
         super().__init__(pygame.image.load("images/king-piece-white.png"),
                          pygame.image.load("images/king-piece-black.png"),
                          isWhite,
                          startingsquare,
-                         hasmoved=hasmoved)
+                         hasmoved=hasmoved,
+                         promotion=promotion)
         # Store the white and black check images
         self.whiteCheckImage = pygame.transform.smoothscale(
             pygame.image.load("images/king-piece-white-check.png"),
@@ -36,6 +37,12 @@ class King(Piece):
 
     # Function to check if move is leagal, overwrites the default function
     def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False):
+        # If we're in promotion mode, we can only move to that square
+        if self.promotion is not None:
+            if targetSquare == self.promotion:
+                return True
+            else:
+                return False
         # Check that Piece doesn't have something against moving here, ignoreCheck is always False, since we have our own check handling code
         if not super().is_valid_move(targetSquare, gamePieces, board, capture=capture, ignoreCheck=True):
             return False

@@ -5,15 +5,22 @@ import configs
 
 class Knight(Piece):
     # Overwrite the __init__ function to pass different images
-    def __init__(self, startingsquare, isWhite, hasmoved=False):
+    def __init__(self, startingsquare, isWhite, hasmoved=False, promotion=None):
         super().__init__(pygame.image.load("images/knight-piece-white.png"),
                          pygame.image.load("images/knight-piece-black.png"),
                          isWhite,
                          startingsquare,
-                         hasmoved=hasmoved)
+                         hasmoved=hasmoved,
+                         promotion=promotion)
 
     # Function to check if move is leagal, overwrites the default function
     def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False):
+        # If we're in promotion mode, we can only move to that square
+        if self.promotion is not None:
+            if targetSquare == self.promotion:
+                return True
+            else:
+                return False
         # Check that our y difference is 1 or 2
         if abs(self.squarey-targetSquare[1]) not in [1,2]:
             return False

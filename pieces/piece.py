@@ -3,7 +3,7 @@ import configs
 
 # General piece class, all pieces should have this as their parent
 class Piece(pygame.sprite.Sprite):
-    def __init__(self, whiteImage, blackImage, isWhite, startingsquare, hasmoved=False):
+    def __init__(self, whiteImage, blackImage, isWhite, startingsquare, hasmoved=False, promotion=None):
         # Initialize the sprite
         super().__init__()
 
@@ -48,11 +48,17 @@ class Piece(pygame.sprite.Sprite):
         # Record if we've moved or not
         self.hasMoved = hasmoved
 
+        # Record if we have a target square to be promoted to
+        self.promotion = promotion
+
 
     def move(self, squarex, squarey, gamePieces, capture=True, countMovement=False):
+        # If we're moving and the move is final, clear promotion
+        if countMovement:
+            self.promotion = None
         # Prevent moving if we're captured
         if self.dead:
-            return
+            return False
         # Kill any other pieces we will overlap with, if capture is True
         if capture:
             for sprite in gamePieces.spriteCollidedWithPoint((squarex*configs.SQUARE_SIZE, squarey*configs.SQUARE_SIZE)):
@@ -70,6 +76,7 @@ class Piece(pygame.sprite.Sprite):
         # Store what square we're on
         self.squarex = squarex
         self.squarey = squarey
+        return True
 
     def copy(self):
         # Return a copy of us
@@ -80,6 +87,12 @@ class Piece(pygame.sprite.Sprite):
         
     def update(self, gamePieces, board):
         # Do any animations, should the peice have them
+
+        # Check if we have a promotion square, and if we do, that it's not occupied
+        if self.promotion is not None:
+            if gamePieces.spriteCollidedWithPoint((self.promotion[0]*configs.SQUARE_SIZE, self.promotion[1]*configs.SQUARE_SIZE)):
+                gamePieces.remove(self)
+                self.capture()
 
         # Move to the mouse if needed, but don't update what square we're on
         if self.followMouse:

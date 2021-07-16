@@ -78,10 +78,9 @@ class Players():
         return piece.highlight_moves(*args, **kwargs)
 
     def move(self, piece, *args, **kwargs):
-        # Move to a square, switch active players
-        self.toggle_activations()
-
-        return piece.move(*args, **kwargs)
+        if (piece.move(*args, **kwargs)):
+            # Move to a square, switch active players if the move is final
+            self.toggle_activations()
 
     def toggle_activations(self):
         for player in self.players:
