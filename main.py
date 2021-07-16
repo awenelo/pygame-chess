@@ -177,6 +177,9 @@ def main():
                     
         # Update the game pieces
         gamePieces.update(gamePieces, board)
+
+        # Update the players
+        players.update(gamePieces)
         
         # Clear the screen
         screen.fill((255,255,255))
