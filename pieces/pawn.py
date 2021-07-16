@@ -6,6 +6,7 @@ from .knight import Knight
 from .bishop import Bishop
 from .rook import Rook
 import configs
+from player import Players
 
 class Pawn(Piece):
     # Overwrite the __init__ function to pass different images
@@ -18,7 +19,7 @@ class Pawn(Piece):
                          promotion=promotion)
 
     # Function to check if move is leagal, overwrites the default function
-    def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False):
+    def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False, players=Players()):
         # If we're in promotion mode, we can only move to that square
         if self.promotion is not None:
             if targetSquare == self.promotion:

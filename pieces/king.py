@@ -1,6 +1,7 @@
 import pygame
 
 from .piece import Piece
+from player import Players
 import configs
 
 class King(Piece):
@@ -36,7 +37,7 @@ class King(Piece):
         self.isKing = True
 
     # Function to check if move is leagal, overwrites the default function
-    def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False):
+    def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False, players=Players()):
         # If we're in promotion mode, we can only move to that square
         if self.promotion is not None:
             if targetSquare == self.promotion:
@@ -83,7 +84,7 @@ class King(Piece):
         return True
 
     # Overwrite update() to check if we're in check
-    def update(self, gamePieces, board):
+    def update(self, gamePieces, board, players=Players()):
         # Do Piece.update()
         super().update(gamePieces, board)
 
@@ -95,7 +96,7 @@ class King(Piece):
         self.image = self.whiteImage if self.white else self.blackImage
 
         # Use in_check to check if we're in check
-        threats = self.in_check((self.squarex, self.squarey), gamePieces, board)
+        threats = self.in_check((self.squarex, self.squarey), gamePieces, board, players)
 
         # If there is a threat, set us to incheck
         self.incheck = len(threats)>0
@@ -130,7 +131,7 @@ class King(Piece):
                                     spriteCopy = sprite.copy()
                                     spriteCopy.move(boardTile.squarex, boardTile.squarey, gamePiecesCopy, capture=False)
                                     gamePiecesCopy.add(spriteCopy)
-                                    if len(self.in_check((self.squarex, self.squarey), gamePiecesCopy, board)) == 0:
+                                    if len(self.in_check((self.squarex, self.squarey), gamePiecesCopy, board), players=players) == 0:
                                         # We've found a way to escape, break and cancel being in checkmate
                                         self.checkmate = False
                                         break
@@ -144,7 +145,7 @@ class King(Piece):
         elif self.incheck:
             self.image = self.whiteCheckImage if self.white else self.blackCheckImage
 
-    def in_check(self, square, gamePieces, board):
+    def in_check(self, square, gamePieces, board, players):
         # Create a variable to store threats
         threats = []
         # For each piece, check if moving to our square is a valid move for them
@@ -154,7 +155,7 @@ class King(Piece):
             if sprite.white == self.white:
                 continue
             # Check if the sprite can move to us
-            if sprite.is_valid_move(square, gamePieces, board, capture=True, ignoreCheck=True):
+            if players.is_valid_move(sprite, square, gamePieces, board, ignoreTurn=True, capture=True, ignoreCheck=True):
                 threats.append(sprite)
         return threats
         

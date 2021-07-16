@@ -44,6 +44,9 @@ class Players():
 
         # Store if the game is running
         self.gameOver = False
+
+        # Store if we need to make the next move be a promotion
+        self.nextMovePromotion = False
         
     def add(self, player):
         # Add a player to players, if it's white, make it active
@@ -58,14 +61,18 @@ class Players():
                 return player
 
     # Check if a move is valid
-    def is_valid_move(self, piece, *args, **kwargs):
+    def is_valid_move(self, piece, *args, ignoreTurn=False, **kwargs):
         # Check if the game is running
         if self.gameOver:
             return False
-        
-        # Check if it's the same colour as the current player
-        if piece.white != self.get_active_player().playerNumber:
-            return False
+        if not ignoreTurn:
+            # Check if the next move needs to be a promotion
+            if self.nextMovePromotion and piece.promotion is None:
+                return False
+            
+            # Check if it's the same colour as the current player
+            if piece.white != self.get_active_player().playerNumber:
+                return False
 
         # If it is the same colour, run the piece's is_valid_move function
         return piece.is_valid_move(*args, **kwargs)
@@ -78,9 +85,15 @@ class Players():
         return piece.highlight_moves(*args, **kwargs)
 
     def move(self, piece, *args, **kwargs):
-        if (piece.move(*args, **kwargs)):
+        # Clear that the next move needs to be a promotion
+        self.nextMovePromotion = False
+        r = piece.move(*args, **kwargs)
+        if r:
             # Move to a square, switch active players if the move is final
             self.toggle_activations()
+        else:
+            # If the move is not final, require piece that's moving next to have a promotion square set
+            self.nextMovePromotion = True
 
     def toggle_activations(self):
         for player in self.players:

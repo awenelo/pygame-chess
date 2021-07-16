@@ -176,7 +176,7 @@ def main():
                             selectedPiece[0].highlight_moves(gamePieces, board)
                     
         # Update the game pieces
-        gamePieces.update(gamePieces, board)
+        gamePieces.update(gamePieces, board, players=players)
 
         # Update the players
         players.update(gamePieces)

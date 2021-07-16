@@ -2,6 +2,7 @@ import pygame
 
 from .piece import Piece
 import configs
+from player import Players
 
 class Knight(Piece):
     # Overwrite the __init__ function to pass different images
@@ -14,7 +15,7 @@ class Knight(Piece):
                          promotion=promotion)
 
     # Function to check if move is leagal, overwrites the default function
-    def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False):
+    def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False, players=Players()):
         # If we're in promotion mode, we can only move to that square
         if self.promotion is not None:
             if targetSquare == self.promotion:

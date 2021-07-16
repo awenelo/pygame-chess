@@ -1,5 +1,6 @@
 import pygame
 import configs
+from player import Players
 
 # General piece class, all pieces should have this as their parent
 class Piece(pygame.sprite.Sprite):
@@ -58,7 +59,7 @@ class Piece(pygame.sprite.Sprite):
             self.promotion = None
         # Prevent moving if we're captured
         if self.dead:
-            return False
+            return True
         # Kill any other pieces we will overlap with, if capture is True
         if capture:
             for sprite in gamePieces.spriteCollidedWithPoint((squarex*configs.SQUARE_SIZE, squarey*configs.SQUARE_SIZE)):
@@ -85,7 +86,7 @@ class Piece(pygame.sprite.Sprite):
         else:
             return self.__class__((self.squarex, self.squarey), self.white, hasmoved=self.hasMoved)
         
-    def update(self, gamePieces, board):
+    def update(self, gamePieces, board, players=Players()):
         # Do any animations, should the peice have them
 
         # Check if we have a promotion square, and if we do, that it's not occupied
@@ -134,7 +135,7 @@ class Piece(pygame.sprite.Sprite):
         if not self.dead:
             screen.blit(self.image, self.rect)
 
-    def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False):
+    def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False, players=Players()):
         # If we're captured, we can't move
         if self.dead:
             return False
@@ -176,7 +177,7 @@ class Piece(pygame.sprite.Sprite):
                 gamePieces.remove(piece)
             spriteCopy.move(targetSquare[0], targetSquare[1], gamePieces, capture=True)
             for king in kings:
-                if len(king.in_check((king.squarex, king.squarey), gamePieces, board))>0:
+                if len(king.in_check((king.squarex, king.squarey), gamePieces, board, players))>0:
                     # Undo the changes to gamePieces we've done
                     for piece in threatenedPieces:
                         gamePieces.add(piece)
@@ -266,7 +267,7 @@ class PieceGroup(pygame.sprite.Group):
             sprite.draw(screen)
 
     # Overwrite the update function to add extra parameters
-    def update(self, gamePieces, board):
+    def update(self, gamePieces, board, players=Players()):
         for sprite in self.sprites():
             sprite.update(gamePieces, board)
 
