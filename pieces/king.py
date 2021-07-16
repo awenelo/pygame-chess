@@ -5,11 +5,12 @@ import configs
 
 class King(Piece):
     # Overwrite the __init__ function to pass different images
-    def __init__(self, startingsquare, isWhite):
+    def __init__(self, startingsquare, isWhite, hasmoved=False):
         super().__init__(pygame.image.load("images/king-piece-white.png"),
                          pygame.image.load("images/king-piece-black.png"),
                          isWhite,
-                         startingsquare)
+                         startingsquare,
+                         hasmoved=hasmoved)
         # Store the white and black check images
         self.whiteCheckImage = pygame.transform.smoothscale(
             pygame.image.load("images/king-piece-white-check.png"),

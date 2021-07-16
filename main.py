@@ -97,7 +97,7 @@ def main():
                     # Check if the square we're moving to is valid
                     if players.is_valid_move(selectedPiece[0], targetSquare, gamePieces, board, capture=True):
                         # If so, move to the square
-                        players.move(selectedPiece[0], targetSquare[0], targetSquare[1], gamePieces)
+                        players.move(selectedPiece[0], targetSquare[0], targetSquare[1], gamePieces, countMovement=True)
 
                     # Set the piece to have the deselected image, then clear the selected piece
                     selectedPiece[0].deselect()

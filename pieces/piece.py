@@ -3,7 +3,7 @@ import configs
 
 # General piece class, all pieces should have this as their parent
 class Piece(pygame.sprite.Sprite):
-    def __init__(self, whiteImage, blackImage, isWhite, startingsquare):
+    def __init__(self, whiteImage, blackImage, isWhite, startingsquare, hasmoved=False):
         # Initialize the sprite
         super().__init__()
 
@@ -45,8 +45,11 @@ class Piece(pygame.sprite.Sprite):
         # Store that we are not a king
         self.isKing = False
 
+        # Record if we've moved or not
+        self.hasMoved = hasmoved
 
-    def move(self, squarex, squarey, gamePieces, capture=True):
+
+    def move(self, squarex, squarey, gamePieces, capture=True, countMovement=False):
         # Prevent moving if we're captured
         if self.dead:
             return
@@ -54,6 +57,10 @@ class Piece(pygame.sprite.Sprite):
         if capture:
             for sprite in gamePieces.spriteCollidedWithPoint((squarex*configs.SQUARE_SIZE, squarey*configs.SQUARE_SIZE)):
                 sprite.kill()
+
+        # If we're counting this move, record that we've made a move
+        if countMovement:
+            self.hasMoved = True
             
         # Move to a square
         # Set the position of the piece
@@ -67,9 +74,9 @@ class Piece(pygame.sprite.Sprite):
     def copy(self):
         # Return a copy of us
         if self.__class__ == Piece:
-            return self.__class__(self.whiteImage, self.blackImage, self.white, (self.squarex, self.squarey))
+            return self.__class__(self.whiteImage, self.blackImage, self.white, (self.squarex, self.squarey), hasmoved=self.hasMoved)
         else:
-            return self.__class__((self.squarex, self.squarey), self.white)
+            return self.__class__((self.squarex, self.squarey), self.white, hasmoved=self.hasMoved)
         
     def update(self, gamePieces, board):
         # Do any animations, should the peice have them

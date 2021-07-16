@@ -7,11 +7,12 @@ import configs
 
 class Queen(Piece):
     # Overwrite the __init__ function to pass different images
-    def __init__(self, startingsquare, isWhite):
+    def __init__(self, startingsquare, isWhite, hasmoved=False):
         super().__init__(pygame.image.load("images/queen-piece-white.png"),
                          pygame.image.load("images/queen-piece-black.png"),
                          isWhite,
-                         startingsquare)
+                         startingsquare,
+                         hasmoved=hasmoved)
 
     # Function to check if move is leagal, overwrites the default function
     def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False):
