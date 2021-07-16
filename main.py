@@ -9,6 +9,7 @@ import pygame
 from board import Board
 import pieces
 import configs
+from player import Player, Players
 
 def main():
     # Initialize all pygame modules
@@ -50,6 +51,11 @@ def main():
         gamePieces.add(pieces.Pawn((position, 2), False))
         gamePieces.add(pieces.Pawn((position, 7), True))
 
+    # Create players and add them to a list of players
+    players = Players()
+    players.add(Player(1))
+    players.add(Player(0))
+
     # Create a board object, and pass it the correct width and height, images and center is on the screen
     board = Board(
         configs.SQUARE_COUNT_WIDTH,
@@ -89,9 +95,9 @@ def main():
                         selectedPiece[0].rect.y//configs.SQUARE_SIZE
                         )
                     # Check if the square we're moving to is valid
-                    if selectedPiece[0].is_valid_move(targetSquare, gamePieces, board, capture=True):
+                    if players.is_valid_move(selectedPiece[0], targetSquare, gamePieces, board, capture=True):
                         # If so, move to the square
-                        selectedPiece[0].move(targetSquare[0], targetSquare[1], gamePieces)
+                        players.move(selectedPiece[0], targetSquare[0], targetSquare[1], gamePieces)
 
                     # Set the piece to have the deselected image, then clear the selected piece
                     selectedPiece[0].deselect()
@@ -104,7 +110,7 @@ def main():
                     # Repeat until we select one with legal moves
                     while len(selectedPiece)>0:
                         selectedPiece[0].select()
-                        if selectedPiece[0].highlight_moves(gamePieces, board):
+                        if players.highlight_moves(selectedPiece[0], gamePieces, board):
                             break
                         selectedPiece[0].deselect()
                         selectedPiece.pop(0)
@@ -118,7 +124,7 @@ def main():
                     # Repeat until we select one with legal moves
                     while len(selectedPiece)>0:
                         selectedPiece[0].select()
-                        if selectedPiece[0].highlight_moves(gamePieces, board):
+                        if players.highlight_moves(selectedPiece[0], gamePieces, board):
                             break
                         selectedPiece[0].deselect()
                         selectedPiece.pop(0)
@@ -138,7 +144,7 @@ def main():
                     # Repeat until we select one with legal moves
                     while len(selectedPiece)>0:
                         selectedPiece[0].select()
-                        if selectedPiece[0].highlight_moves(gamePieces, board):
+                        if players.highlight_moves(selectedPiece[0], gamePieces, board):
                             break
                         selectedPiece[0].deselect()
                         selectedPiece.pop(0)
@@ -180,6 +186,9 @@ def main():
         
         # Draw the game pieces
         gamePieces.draw(screen)
+
+        # Draw the player information
+        players.draw(screen)
 
         # Re-draw the selectedPiece above everything else, if there is a selected piece
         if len(selectedPiece)>0:
