@@ -158,10 +158,11 @@ class Piece(pygame.sprite.Sprite):
                 for sprite in foundPieces:
                     if sprite.white != self.white:
                         capturable = True
-                        break
+                        # Force ignoreCheck to be True if we could kill the king
+                        if sprite.isKing:
+                            ignoreCheck=True
             if not capturable:
-                return False
-        
+                return False  
         # Check that we're not putting our king/kings in check, if ignoreCheck is False
         if not ignoreCheck: 
             kings = gamePieces.get_kings(self.white)
