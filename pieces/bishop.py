@@ -28,7 +28,7 @@ class Bishop(Piece):
             testPosX = self.squarex+directionX*distance
             testPosY = self.squarey+directionY*distance
             # For each square, check that we can "exist" in it using the checks in the default isValidMove
-            if not super().is_valid_move((testPosX, testPosY), gamePieces, board, ignoreCheck=ignoreCheck):
+            if not super().is_valid_move((testPosX, testPosY), gamePieces, board, ignoreCheck=True):
                 return False
 
         # Check that Piece doesn't have something against moving here

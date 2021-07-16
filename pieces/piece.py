@@ -66,7 +66,10 @@ class Piece(pygame.sprite.Sprite):
 
     def copy(self):
         # Return a copy of us
-        return Piece(self.whiteImage, self.blackImage, self.white, (self.squarex, self.squarey))
+        if self.__class__ == Piece:
+            return self.__class__(self.whiteImage, self.blackImage, self.white, (self.squarex, self.squarey))
+        else:
+            return self.__class__((self.squarex, self.squarey), self.white)
         
     def update(self, gamePieces, board):
         # Do any animations, should the peice have them
@@ -122,8 +125,7 @@ class Piece(pygame.sprite.Sprite):
 
         # Check that we're not trying to move off the board
         if not board.is_on_board((targetSquare[0]*configs.SQUARE_SIZE, targetSquare[1]*configs.SQUARE_SIZE)):
-            return False
-        
+            return False        
                 
         # With the defualt piece, any move that doesn't overlap another piece is legal
         # We check that by calling spriteCollidedWithPoint on the target square
@@ -144,15 +146,27 @@ class Piece(pygame.sprite.Sprite):
         if not ignoreCheck: 
             kings = gamePieces.get_kings(self.white)
             # Make a copy of our move and game pieces
-            gamePiecesCopy = gamePieces.copy()
             spriteCopy = self.copy()
-            self.remove(gamePiecesCopy)
-            spriteCopy.move(targetSquare[0], targetSquare[1], gamePiecesCopy, capture=False)
-            gamePiecesCopy.add(spriteCopy)
+            gamePieces.remove(self)
+            gamePieces.add(spriteCopy)
+            # Remove any pieces that would be killed from moving
+            threatenedPieces = gamePieces.spriteCollidedWithPoint((targetSquare[0]*configs.SQUARE_SIZE, targetSquare[1]*configs.SQUARE_SIZE))
+            for piece in threatenedPieces:
+                gamePieces.remove(piece)
+            spriteCopy.move(targetSquare[0], targetSquare[1], gamePieces, capture=True)
             for king in kings:
-                if len(king.in_check((king.squarex, king.squarey), gamePiecesCopy, board))>0:
+                if len(king.in_check((king.squarex, king.squarey), gamePieces, board))>0:
+                    # Undo the changes to gamePieces we've done
+                    for piece in threatenedPieces:
+                        gamePieces.add(piece)
+                    gamePieces.remove(spriteCopy)
+                    gamePieces.add(self)
                     return False
-                
+            # Undo the changes to gamePieces we've done
+            for piece in threatenedPieces:
+                gamePieces.add(piece)
+            gamePieces.remove(spriteCopy)
+            gamePieces.add(self)
         
         # All checks have passed
         return True
@@ -235,7 +249,15 @@ class PieceGroup(pygame.sprite.Group):
         for sprite in self.sprites():
             sprite.update(gamePieces, board)
 
-
+    # Overwrite the copy function
+    def copy(self, excludelist=[]):
+        # Create a new piece group, and add a copy of every piece to it
+        retGroup = PieceGroup()
+        for sprite in self.sprites():
+            if sprite not in excludelist:
+                retGroup.add(sprite.copy())
+        return retGroup
+        
     # Get kings
     def get_kings(self, white):
         kings = []

@@ -33,7 +33,7 @@ class Queen(Piece):
                 testPosY = self.squarey+directionY*distance
                 
                 # For each square, check that we can "exist" in it using the checks in the default isValidMove
-                if not super().is_valid_move((testPosX, testPosY), gamePieces, board, ignoreCheck=ignoreCheck):
+                if not super().is_valid_move((testPosX, testPosY), gamePieces, board, ignoreCheck=True):
                     return False
                          
         # Check if we're going horizontally
@@ -43,7 +43,7 @@ class Queen(Piece):
             for xpos in range(int(min(self.squarex, targetSquare[0])+1), int(max(self.squarex, targetSquare[0]))):
                 
                 # For each square, check that we can "exist" in it using the checks in the default isValidMove
-                if not super().is_valid_move((xpos, targetSquare[1]), gamePieces, board, ignoreCheck=ignoreCheck):
+                if not super().is_valid_move((xpos, targetSquare[1]), gamePieces, board, ignoreCheck=True):
                     return False
         # Check if we're going vertically
         elif self.squarex == targetSquare[0]:
@@ -51,7 +51,7 @@ class Queen(Piece):
             for ypos in range(int(min(self.squarey, targetSquare[1])+1), int(max(self.squarey, targetSquare[1]))):
                 
                 # For each square, check that we can "exist" in it using the checks in the default isValidMove
-                if not super().is_valid_move((targetSquare[0], ypos), gamePieces, board, ignoreCheck=ignoreCheck):
+                if not super().is_valid_move((targetSquare[0], ypos), gamePieces, board, ignoreCheck=True):
                     return False
         # If we're not going horizontally, vertically or diagonally, return False
         else:

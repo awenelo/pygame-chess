@@ -145,7 +145,7 @@ class King(Piece):
             # If the piece is on our side, skip checking any further
             if sprite.white == self.white:
                 continue
-            # Check if the sprite is a king, if so, we need to pass ignoreCheck
+            # Check if the sprite can move to us
             if sprite.is_valid_move(square, gamePieces, board, capture=True, ignoreCheck=True):
                 threats.append(sprite)
         return threats
