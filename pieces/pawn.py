@@ -1,6 +1,10 @@
 import pygame
 
 from .piece import Piece
+from .queen import Queen
+from .knight import Knight
+from .bishop import Bishop
+from .rook import Rook
 import configs
 
 class Pawn(Piece):
@@ -53,3 +57,11 @@ class Pawn(Piece):
 
         # All checks have passed, return True
         return True
+    # Adds promotions to move
+    def move(self, squarex, squarey, gamePieces, capture=True, countMovement=False):
+        super().move(squarex, squarey, gamePieces, capture=capture, countMovement=countMovement)
+        # Check if we're at the top or bottom of the board
+        if self.squarey in [1,8]:
+            # If we're at the top or bottom, remove us and add a new queen to pieces
+            gamePieces.remove(self)
+            gamePieces.add(Queen((self.squarex, self.squarey), self.white, hasmoved=True))
