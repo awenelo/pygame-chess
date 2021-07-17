@@ -182,10 +182,21 @@ def main():
                                 break
                             selectedPiece[0].deselect()
                             selectedPiece.pop(0)
-        # If there's no selected piece, highlight the square the mouse is over
+        # If there's no selected piece, highlight the square the mouse is over, if the squarehas a piece with valid moves
         if len(selectedPiece) == 0:
-            board.remove_other_highlight_points(pygame.mouse.get_pos())
-            board.highlight_point(pygame.mouse.get_pos())
+            mousePos = pygame.mouse.get_pos()
+            # Get the pieces the mouse is over
+            for piece in gamePieces.spriteCollidedWithPoint(mousePos):
+                # Check if there's a move that can be highlighted
+                if players.highlight_moves(piece, gamePieces, board):
+                    # If there is, clear the highlights and highlight the square the mouse is over
+                    board.remove_other_highlight_points(mousePos)
+                    board.highlight_point(mousePos)
+                    # Then break, to skip the else block below
+                    break
+            else:
+                # If no piece that the mouse is over has a valid move, clear all highlights
+                board.remove_highlights()
         # Update the game pieces
         gamePieces.update(gamePieces, board, players=players)
 

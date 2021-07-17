@@ -28,7 +28,7 @@ class Player():
 
     def draw(self, screen):
         if self.activePlayer:
-            text = pygame.font.Font(configs.FONT, 25).render(f"Player {abs(self.playerNumber-1)+1} - {'white' if self.playerNumber==1 else 'black'}{' loses' if self.lost else ''}", True, (0,0,0))
+            text = pygame.font.Font(configs.FONT, 25).render(f"Player {abs(self.playerNumber-1)+1} - {'white' if self.playerNumber==1 else 'black'}{' loses' if self.lost else ' move'}", True, (0,0,0))
             textRect = text.get_rect()
             textRect.centerx = configs.WIDTH//2
             textRect.top = 12
