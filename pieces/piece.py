@@ -86,7 +86,7 @@ class Piece(pygame.sprite.Sprite):
         else:
             return self.__class__((self.squarex, self.squarey), self.white, hasmoved=self.hasMoved)
         
-    def update(self, gamePieces, board, players=Players()):
+    def update(self, gamePieces, board, moveMade, players=Players()):
         # Do any animations, should the peice have them
 
         # Check if we have a promotion square, and if we do, that it's not occupied
@@ -267,9 +267,9 @@ class PieceGroup(pygame.sprite.Group):
             sprite.draw(screen)
 
     # Overwrite the update function to add extra parameters
-    def update(self, gamePieces, board, players=Players()):
+    def update(self, gamePieces, board, moveMade, players=Players()):
         for sprite in self.sprites():
-            sprite.update(gamePieces, board)
+            sprite.update(gamePieces, board, moveMade)
 
     # Overwrite the copy function
     def copy(self, excludelist=[]):

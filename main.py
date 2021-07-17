@@ -79,6 +79,9 @@ def main():
 
     # Main loop
     while True:
+        # Store if a move was made this loop
+        moveMade = False
+        
         # Event loop, fetch all events and check for certain events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -98,6 +101,9 @@ def main():
                     if players.is_valid_move(selectedPiece[0], targetSquare, gamePieces, board, capture=True):
                         # If so, move to the square
                         players.move(selectedPiece[0], targetSquare[0], targetSquare[1], gamePieces, countMovement=True)
+
+                        # Store that we've made a move
+                        moveMade = True
 
                     # Set the piece to have the deselected image, then clear the selected piece
                     selectedPiece[0].deselect()
@@ -198,7 +204,7 @@ def main():
                 # If no piece that the mouse is over has a valid move, clear all highlights
                 board.remove_highlights()
         # Update the game pieces
-        gamePieces.update(gamePieces, board, players=players)
+        gamePieces.update(gamePieces, board, moveMade, players=players)
 
         # Update the players
         players.update(gamePieces)
