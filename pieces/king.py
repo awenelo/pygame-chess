@@ -131,7 +131,7 @@ class King(Piece):
                                     spriteCopy = sprite.copy()
                                     spriteCopy.move(boardTile.squarex, boardTile.squarey, gamePiecesCopy, capture=False)
                                     gamePiecesCopy.add(spriteCopy)
-                                    if len(self.in_check((self.squarex, self.squarey), gamePiecesCopy, board), players=players) == 0:
+                                    if len(self.in_check((self.squarex, self.squarey), gamePiecesCopy, board, players=players)) == 0:
                                         # We've found a way to escape, break and cancel being in checkmate
                                         self.checkmate = False
                                         break

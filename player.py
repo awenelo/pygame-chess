@@ -81,6 +81,9 @@ class Players():
         # Highlight valid moves
         if piece.white != self.get_active_player().playerNumber:
             return False
+        # Check if the next move needs to be a promotion
+        if self.nextMovePromotion and piece.promotion is None:
+            return False
         # If they're the same colour, run the pieces' function and return the result
         return piece.highlight_moves(*args, **kwargs)
 

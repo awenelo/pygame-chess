@@ -181,7 +181,7 @@ def main():
                             if players.highlight_moves(selectedPiece[0], gamePieces, board):
                                 break
                             selectedPiece[0].deselect()
-                        selectedPiece.pop(0)
+                            selectedPiece.pop(0)
         # If there's no selected piece, highlight the square the mouse is over
         if len(selectedPiece) == 0:
             board.remove_other_highlight_points(pygame.mouse.get_pos())
