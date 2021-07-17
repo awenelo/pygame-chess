@@ -110,6 +110,7 @@ def main():
                     # Repeat until we select one with legal moves
                     while len(selectedPiece)>0:
                         selectedPiece[0].select()
+                        board.remove_highlights()
                         if players.highlight_moves(selectedPiece[0], gamePieces, board):
                             break
                         selectedPiece[0].deselect()
@@ -124,6 +125,7 @@ def main():
                     # Repeat until we select one with legal moves
                     while len(selectedPiece)>0:
                         selectedPiece[0].select()
+                        board.remove_highlights()
                         if players.highlight_moves(selectedPiece[0], gamePieces, board):
                             break
                         selectedPiece[0].deselect()
@@ -144,6 +146,7 @@ def main():
                     # Repeat until we select one with legal moves
                     while len(selectedPiece)>0:
                         selectedPiece[0].select()
+                        board.remove_highlights()
                         if players.highlight_moves(selectedPiece[0], gamePieces, board):
                             break
                         selectedPiece[0].deselect()
@@ -171,10 +174,18 @@ def main():
                         board.remove_highlights()
 
                         # If there's still a piece in selectedPiece, probably due to an error, select that one
-                        if len(selectedPiece)>0:
+                        # Repeat until we select one with legal moves
+                        while len(selectedPiece)>0:
                             selectedPiece[0].select()
-                            selectedPiece[0].highlight_moves(gamePieces, board)
-                    
+                            board.remove_highlights()
+                            if players.highlight_moves(selectedPiece[0], gamePieces, board):
+                                break
+                            selectedPiece[0].deselect()
+                        selectedPiece.pop(0)
+        # If there's no selected piece, highlight the square the mouse is over
+        if len(selectedPiece) == 0:
+            board.remove_other_highlight_points(pygame.mouse.get_pos())
+            board.highlight_point(pygame.mouse.get_pos())
         # Update the game pieces
         gamePieces.update(gamePieces, board, players=players)
 
@@ -185,7 +196,7 @@ def main():
         screen.fill((255,255,255))
 
         # Draw the board
-        board.draw(screen)
+        board.draw(screen, pygame.mouse.get_pos() if len(selectedPiece) == 0 else selectedPiece[0].rect.center)
         
         # Draw the game pieces
         gamePieces.draw(screen)

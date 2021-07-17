@@ -28,7 +28,17 @@ class BoardTile(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.topleft = (tile_top_left[0]*configs.SQUARE_SIZE,
                              tile_top_left[1]*configs.SQUARE_SIZE)
-        
+
+    # When we stringify the BoardTile, output our letter file (vertical) and number rank (horizontal)
+    def __str__(self):
+        return self.get_file() + self.get_rank()
+
+    def get_rank(self):
+        return str(9-self.squarey)
+
+    def get_file(self):
+        return "abcdefgh"[self.squarex-1].lower()
+    
     # Function to switch a tile to the highlighted image
     def highlight(self, capture=False):
         self.image = self.highlighted_image if not capture else self.capturable_image
@@ -155,7 +165,19 @@ class Board():
         for sprite in self.boardGroup.sprites():
             if sprite.rect.collidepoint(point):
                 return True
+
+    # Gets the tile that the point collides with
+    def get_tile_point(self, point):
+        for sprite in self.boardGroup.sprites():
+            if sprite.rect.collidepoint(point):
+                return sprite
     
-    def draw(self, screen):
+    def draw(self, screen, mousePos):
         # Draw every item in boardGroup
         self.boardGroup.draw(screen)
+
+        # Draw the number of the tile that the mouse is over in the bottom right
+        text = pygame.font.Font(configs.FONT, 25).render(str(string if (string := self.get_tile_point(mousePos)) is not None else ""), True, (0,0,0))
+        textRect = text.get_rect()
+        textRect.bottomright = (configs.WIDTH, configs.HEIGHT)
+        screen.blit(text, textRect)
