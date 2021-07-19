@@ -99,6 +99,14 @@ class Players():
             # If the move is not final, require piece that's moving next to have a promotion square set
             self.nextMovePromotion = True
             recorder.promotion = True
+        if kwargs["countMovement"]:
+            # If we're counting the movement, clear all justMoved flags except for the one we just moved
+            for sprite in args[2]:
+                if sprite is piece:
+                    continue
+                sprite.hasMoved |= sprite.justMoved
+                sprite.justMoved = False
+            
 
     def toggle_activations(self):
         for player in self.players:

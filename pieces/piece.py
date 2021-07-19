@@ -49,6 +49,9 @@ class Piece(pygame.sprite.Sprite):
         # Record if we've moved or not
         self.hasMoved = hasmoved
 
+        # Record if we've just made a movement
+        self.justMoved = False
+
         # Record if we have a target square to be promoted to
         self.promotion = promotion
 
@@ -73,7 +76,7 @@ class Piece(pygame.sprite.Sprite):
 
         # If we're counting this move, record that we've made a move
         if countMovement:
-            self.hasMoved = True
+            self.justMoved = True
             
         # Move to a square
         # Set the position of the piece
@@ -88,7 +91,7 @@ class Piece(pygame.sprite.Sprite):
     def copy(self):
         # Return a copy of us
         if self.__class__ == Piece:
-            return self.__class__(self.whiteImage, self.blackImage, self.white, (self.squarex, self.squarey), hasmoved=self.hasMoved)
+            return self.__class__(self.whiteImage, self.blackImage, self.white, (self.squarex, self.squarey), hasmoved=(self.hasMoved or self.justMoved))
         else:
             return self.__class__((self.squarex, self.squarey), self.white, hasmoved=self.hasMoved)
         
@@ -179,6 +182,17 @@ class Piece(pygame.sprite.Sprite):
             gamePieces.add(spriteCopy)
             # Remove any pieces that would be killed from moving
             threatenedPieces = gamePieces.spriteCollidedWithPoint((targetSquare[0]*configs.SQUARE_SIZE, targetSquare[1]*configs.SQUARE_SIZE))
+            if self.name == "P":
+                threatenedPawns = gamePieces.spriteCollidedWithPoint((targetSquare[0]*configs.SQUARE_SIZE, self.squarey*configs.SQUARE_SIZE))
+                for pawn in threatenedPawns:
+                    if (
+                        pawn.name == "P"
+                        and not pawn.hasMoved
+                        and pawn.justMoved
+                        and pawn.squarex == targetSquare[0]
+                        and pawn.squarey == self.squarey
+                        ):
+                        threatenedPieces.append(pawn)
             for piece in threatenedPieces:
                 gamePieces.remove(piece)
             spriteCopy.move(targetSquare[0], targetSquare[1], gamePieces, capture=True)

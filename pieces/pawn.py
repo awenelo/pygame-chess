@@ -59,7 +59,20 @@ class Pawn(Piece):
         # If we're moving horizontally, check that we need to capture to move
         if self.squarex != targetSquare[0]:
             if not(captureTargetSquare and not noCaptureTargetSquare):
-                return False
+                # If we don't need to capture to move, check if there's a piece to our left/right that can be captured, and has just moved. If there is, then the move is legal (en passant)
+                noCaptureBeside = super().is_valid_move((targetSquare[0], self.squarey), gamePieces, board, capture=False)
+                captureBeside = super().is_valid_move((targetSquare[0], self.squarey), gamePieces, board, capture=True)
+                if not(captureBeside and not noCaptureBeside):
+                    return False
+
+                # If there is a pawn beside us, check if it's of the oposite colour and has just moved and is beside us
+                for piece in gamePieces:
+                    if piece.name == "P" and piece.white != self.white and not piece.hasMoved and piece.justMoved and piece.squarex == targetSquare[0] and piece.squarey == self.squarey:
+                        # We've found a pawn in the right place, break out of searching
+                        break
+                else:
+                    # We haven't found any pawns that meet our needs, return False
+                    return False
 
         # Check that Piece doesn't have something against moving here
         if not super().is_valid_move(targetSquare, gamePieces, board, capture=capture, ignoreCheck=ignoreCheck):
@@ -69,6 +82,13 @@ class Pawn(Piece):
         return True
     # Adds promotions to move
     def move(self, squarex, squarey, gamePieces, capture=True, countMovement=False):
+        if capture:
+            # If we can capture, check if there's a pawn to our left/right, and if there is, and it meets the other en passant rules, capture it
+            for piece in gamePieces:
+                if piece.name == "P" and piece.white != self.white and not piece.hasMoved and piece.justMoved and piece.squarex == squarex and piece.squarey == self.squarey:
+                    # We've found a pawn in the right place, capture the pawn an break out of searching
+                    piece.capture()
+                    break
         super().move(squarex, squarey, gamePieces, capture=capture, countMovement=countMovement)
         # Check if we're at the top or bottom of the board and this move is permentant
         if countMovement and self.squarey in [1,8]:
