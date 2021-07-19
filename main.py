@@ -10,6 +10,7 @@ from board import Board
 import pieces
 import configs
 from player import Player, Players
+from PGN_recorder import Recorder
 
 def main():
     # Initialize all pygame modules
@@ -50,11 +51,14 @@ def main():
     for position in range(1,9):
         gamePieces.add(pieces.Pawn((position, 2), False))
         gamePieces.add(pieces.Pawn((position, 7), True))
-
+        
     # Create players and add them to a list of players
     players = Players()
     players.add(Player(1))
     players.add(Player(0))
+
+    # Create a recorder object
+    recorder = Recorder()
 
     # Create a board object, and pass it the correct width and height, images and center is on the screen
     board = Board(
@@ -98,9 +102,9 @@ def main():
                         selectedPiece[0].rect.y//configs.SQUARE_SIZE
                         )
                     # Check if the square we're moving to is valid
-                    if players.is_valid_move(selectedPiece[0], targetSquare, gamePieces, board, capture=True):
+                    if players.is_valid_move(selectedPiece[0], targetSquare, gamePieces, board, capture=True):                  
                         # If so, move to the square
-                        players.move(selectedPiece[0], targetSquare[0], targetSquare[1], gamePieces, countMovement=True)
+                        players.move(selectedPiece[0], recorder, board, targetSquare[0], targetSquare[1], gamePieces, countMovement=True)
 
                         # Store that we've made a move
                         moveMade = True
