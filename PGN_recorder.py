@@ -40,18 +40,34 @@ class Recorder():
         # If we're a pawn, always specify file
         if piece.name == "P":
             precisionXNeeded = True
+
+        # Check that we're not caslting
+        if piece.name == "K" and abs(piece.squarex-moveTo[0])>1:
+            for sprite in gamePieces:
+                if sprite.name == "R" and sprite.white == piece.white and sprite.hasMoved == False and sprite.squarex == (8 if piece.squarex-moveTo[0]<0 else 1):
+                    castling = True
+                    break
+            else:
+                castling = False
+        else:
+            castling = False
         with open(self.filename, mode="a") as f:
             f.write(
                 ((
                     "\n" # Add a new line
                     + str(self.move) # Mark which move we're on
                     + ". " # Add the dot
-                ) if piece.white and not self.promotion else ("=" if self.promotion else " "))
-                + piece.get_square(capture=capture,
-                                   precisionXNeeded=precisionXNeeded and not self.promotion,
-                                   precisionYNeeded=precisionYNeeded and not self.promotion)
-                + (self.get_rank_file(moveTo) if not self.promotion else "")
-                )
+                ) if piece.white and not self.promotion else ("=" if self.promotion else " ")))
+            if not castling:
+                f.write(
+                    piece.get_square(capture=capture,
+                                     precisionXNeeded=precisionXNeeded and not self.promotion,
+                                     precisionYNeeded=precisionYNeeded and not self.promotion)
+                    + (self.get_rank_file(moveTo) if not self.promotion else "")
+                    )
+            else:
+                # We're castling
+                f.write("O-O" if piece.squarex-moveTo[0]<0 else "O-O-O")
             # Clear if the next move is a promotion
             self.promotion = False
         if not piece.white: # If the piece is black (we just created a new line), increment our move counter by 1
