@@ -13,6 +13,8 @@ class Knight(Piece):
                          startingsquare,
                          hasmoved=hasmoved,
                          promotion=promotion)
+        # Change our name to "N"
+        self.name = "N"
 
     # Function to check if move is leagal, overwrites the default function
     def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False, players=Players()):

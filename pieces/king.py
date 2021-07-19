@@ -40,6 +40,9 @@ class King(Piece):
         self.incheck = False
         self.checkmate = False
 
+        # Change our name to "K"
+        self.name = "K"
+
     # Function to check if move is leagal, overwrites the default function
     def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False, players=Players()):
         # If we're in promotion mode, we can only move to that square
@@ -48,14 +51,35 @@ class King(Piece):
                 return True
             else:
                 return False
-        # Check that Piece doesn't have something against moving here, ignoreCheck is always False, since we have our own check handling code
+            
+        # Check that Piece doesn't have something against moving here, ignoreCheck is always True, since we have our own check handling code
         if not super().is_valid_move(targetSquare, gamePieces, board, capture=capture, ignoreCheck=True):
             return False
 
         # Check that we're moving to a square that's at most +1/-1 away in both directions
-        # That's the only check.
         if abs(self.squarex-targetSquare[0])>1 or abs(self.squarey-targetSquare[1])>1:
-            return False
+            # Check if we're moving to a castle position - 2 squares left or right, haven't moved and same square vertically
+            if (not self.hasMoved) and self.squarey==targetSquare[1] and abs(self.squarex-targetSquare[0])==2:
+                # If we're on a square we can castle to, check that the rook is still in place, and can move to the correct square
+                for piece in gamePieces:
+                    if piece.name == "R" and piece.white == self.white and piece.hasMoved == False and piece.squarex == (8 if self.squarex-targetSquare[0]<0 else 1):
+                        castlingRook = piece
+                        break
+                else:
+                    # If the rook we want to castle with has moved, the the move is not valid
+                    return False
+                # Check that the square 1 to our right/left is a valid move and would not put us in check
+                if not self.is_valid_move((targetSquare[0]+((self.squarex-targetSquare[0])//2), targetSquare[1]), gamePieces, board, capture=False, ignoreCheck=ignoreCheck):
+                    return False
+
+                # Check that the rook can move to the square 1 to our right/left - note that this will return False if the king is in check, as a castling move can't happen in check
+                if not castlingRook.is_valid_move((targetSquare[0]+((self.squarex-targetSquare[0])//2), targetSquare[1]), gamePieces, board, capture=False, ignoreCheck=ignoreCheck):
+                    return False
+
+                # If we can castle, do the rest of the checks, forcing capture False, as a castling move can't capture
+                capture = False
+            else:
+                return False
         
         # If we're told to ignore check, return True since the check for if we would be in check is the last check
         if ignoreCheck:
@@ -86,6 +110,26 @@ class King(Piece):
         
         # The checks have passed, return True
         return True
+
+    # Overwrite move() to castle if we're castling
+    def move(self, squarex, squarey, gamePieces, capture=True, countMovement=False):
+        # Check if we're castling - moving more than 1 square in the x direction
+        # If we are, find the rook we're castling with and move it to the correct position
+        if abs(self.squarex-squarex)>1:
+            for piece in gamePieces:
+                if piece.name == "R" and piece.white == self.white and piece.hasMoved == False and piece.squarex == (8 if self.squarex-squarex<0 else 1):
+                    castlingRook = piece
+                    break
+            else:
+                return super().move(squarex, squarey, gamePieces, capture=capture, countMovement=countMovement)
+
+            # Move the rook to the square next to us
+            castlingRook.move(self.squarex-(self.squarex-squarex)//2, squarey, gamePieces, capture=False, countMovement=True)
+
+            # Then move to the target square
+            return super().move(squarex, squarey, gamePieces, capture=capture, countMovement=countMovement)
+        # If we aren't castling, make a normal move
+        return super().move(squarex, squarey, gamePieces, capture=capture, countMovement=countMovement)
 
     # Overwrite update() to check if we're in check
     def update(self, gamePieces, board, moveMade, players=Players()):

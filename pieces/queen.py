@@ -16,6 +16,9 @@ class Queen(Piece):
                          hasmoved=hasmoved,
                          promotion=promotion)
 
+        # Change our name to "Q"
+        self.name = "Q"
+
     # Function to check if move is leagal, overwrites the default function
     def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False, players=Players()):
         # If we're in promotion mode, we can only move to that square

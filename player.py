@@ -87,16 +87,18 @@ class Players():
         # If they're the same colour, run the pieces' function and return the result
         return piece.highlight_moves(*args, **kwargs)
 
-    def move(self, piece, *args, **kwargs):
+    def move(self, piece, recorder, board, *args, **kwargs):
+        # Record the move
+        recorder.record_move(piece, (args[0], args[1]), args[2], board)
         # Clear that the next move needs to be a promotion
         self.nextMovePromotion = False
-        r = piece.move(*args, **kwargs)
-        if r:
+        if piece.move(*args, **kwargs):
             # Move to a square, switch active players if the move is final
             self.toggle_activations()
         else:
             # If the move is not final, require piece that's moving next to have a promotion square set
             self.nextMovePromotion = True
+            recorder.promotion = True
 
     def toggle_activations(self):
         for player in self.players:

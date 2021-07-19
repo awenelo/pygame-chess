@@ -13,6 +13,8 @@ class Bishop(Piece):
                          startingsquare,
                          hasmoved=hasmoved,
                          promotion=promotion)
+        # Change our name to "B"
+        self.name = "B"
 
     # Function to check if move is leagal, overwrites the default function
     def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False, players=Players()):

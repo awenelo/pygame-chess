@@ -17,6 +17,8 @@ class Pawn(Piece):
                          startingsquare,
                          hasmoved=hasmoved,
                          promotion=promotion)
+        # Change our name to "P"
+        self.name = "P"
 
     # Function to check if move is leagal, overwrites the default function
     def is_valid_move(self, targetSquare, gamePieces, board, capture=False, ignoreCheck=False, players=Players()):

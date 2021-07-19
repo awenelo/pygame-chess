@@ -52,7 +52,13 @@ class Piece(pygame.sprite.Sprite):
         # Record if we have a target square to be promoted to
         self.promotion = promotion
 
+        # Set our single-character name
+        self.name = "X"
 
+    def get_square(self, capture=False, precisionXNeeded=False, precisionYNeeded=False):
+        # When turned into a string, return our square and name ("K", "Q", ...)
+        return self.name + ("abcdefgh"[self.squarex-1].lower() if precisionXNeeded else "") + (str(9-self.squarey) if precisionYNeeded else "") + ("x" if capture else "")
+    
     def move(self, squarex, squarey, gamePieces, capture=True, countMovement=False):
         # If we're moving and the move is final, clear promotion
         if countMovement:
