@@ -35,6 +35,7 @@ class Pawn(Piece):
         # Check that we're moving in the correct direction
         if self.squarey - targetSquare[1] not in yDirection:
             return False
+            
 
         # If we're moving horizontally, check that we're not moving 2 forwards/backwards
         if self.squarey - targetSquare[1] != yDirection[0] and self.squarex != targetSquare[0]:
@@ -46,6 +47,11 @@ class Pawn(Piece):
         # Check that we're moving -1 to 1 in the x direction
         elif abs(self.squarex-targetSquare[0]) > 1:
             return False
+
+        # Check that if we're moving forward 2, we're not leaping over another piece
+        if abs(self.squarey-targetSquare[1]) == 2:
+            if not super().is_valid_move((targetSquare[0], self.squarey-yDirection[0]), gamePieces, board, capture=False, ignoreCheck=True):
+                return False
 
         # Store if we can move to the targetSquare if we're capturing, and if we're not capturing
         noCaptureTargetSquare = super().is_valid_move(targetSquare, gamePieces, board, capture=False)
