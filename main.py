@@ -220,7 +220,7 @@ def main():
         board.draw(screen, pygame.mouse.get_pos() if len(selectedPiece) == 0 else selectedPiece[0].rect.center)
         
         # Draw the game pieces
-        gamePieces.draw(screen)
+        gamePieces.draw(screen, selectedPiece=selectedPiece)
 
         # Draw the player information
         players.draw(screen)

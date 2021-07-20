@@ -282,9 +282,18 @@ class PieceGroup(pygame.sprite.Group):
         return foundSprites
 
     # Overwrite the draw function to call the draw function of each sprite
-    def draw(self, screen):
+    def draw(self, screen, selectedPiece=[]):
+        drawnLocs = []
         for sprite in self.sprites():
-            sprite.draw(screen)
+            # Draw the sprite if it's not over another sprite and it's not over the selectedPiece
+            if (
+                (False if len(selectedPiece) == 0 else (sprite is selectedPiece[0]))
+                or (sprite.rect.center not in drawnLocs
+                    and (True if len(selectedPiece) == 0 else sprite.rect.center != selectedPiece[0].rect.center)
+                )): 
+                sprite.draw(screen)
+                # Add it's position to the list of sprites that we've drawn
+                drawnLocs.append(sprite.rect.center)
 
     # Overwrite the update function to add extra parameters
     def update(self, gamePieces, board, moveMade, players=Players()):
