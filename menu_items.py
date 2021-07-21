@@ -15,8 +15,8 @@ class StartButton(pygame.sprite.Sprite):
             )
         self.rect = self.image.get_rect()
 
-        # Center the image rect
-        self.rect.center = (configs.WIDTH//2, configs.HEIGHT//2+75)
+        # Move the rect into position
+        self.rect.center = (configs.WIDTH//2, configs.HEIGHT//2+125)
 
     def draw(self, screen):
         # Draw us on the screen
@@ -40,7 +40,7 @@ class TitleText(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
         # Move the rect into position
-        self.rect.center = (configs.WIDTH//2, configs.HEIGHT//2-100)
+        self.rect.midtop = (configs.WIDTH//2, 75)
 
     def draw(self, screen):
         # Draw us on the screen

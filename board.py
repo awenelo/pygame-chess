@@ -172,12 +172,13 @@ class Board():
             if sprite.rect.collidepoint(point):
                 return sprite
     
-    def draw(self, screen, mousePos):
+    def draw(self, screen, mousePos, nameSquare=True):
         # Draw every item in boardGroup
         self.boardGroup.draw(screen)
 
-        # Draw the number of the tile that the mouse is over in the bottom right
-        text = pygame.font.Font(configs.FONT, 25).render(str(string if (string := self.get_tile_point(mousePos)) is not None else ""), True, (0,0,0))
-        textRect = text.get_rect()
-        textRect.bottomright = (configs.WIDTH, configs.HEIGHT)
-        screen.blit(text, textRect)
+        # Draw the number of the tile that the mouse is over in the bottom right, if we're in a game
+        if nameSquare:
+            text = pygame.font.Font(configs.FONT, 25).render(str(string if (string := self.get_tile_point(mousePos)) is not None else ""), True, (0,0,0))
+            textRect = text.get_rect()
+            textRect.bottomright = (configs.WIDTH, configs.HEIGHT)
+            screen.blit(text, textRect)

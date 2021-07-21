@@ -153,6 +153,9 @@ def main():
         # Clear the screen
         screen.fill((255,255,255))
         
+        # Draw the board
+        board.draw(screen, pygame.mouse.get_pos() if len(selectedPiece) == 0 else selectedPiece[0].rect.center, nameSquare=False)
+            
         # If we're in a game,
         if game.inGame:
             # Update the game pieces
@@ -161,9 +164,6 @@ def main():
             # Update the players
             players.update(game.gamePieces)
 
-            # Draw the board
-            board.draw(screen, pygame.mouse.get_pos() if len(selectedPiece) == 0 else selectedPiece[0].rect.center)
-            
             # Draw the game pieces
             game.gamePieces.draw(screen, selectedPiece=selectedPiece)
 
