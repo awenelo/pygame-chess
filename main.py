@@ -129,7 +129,7 @@ def main():
                 if event.key == pygame.K_d:
                     showTimeSinceTick = not showTimeSinceTick
                         
-        # If there's no selected piece, and we're in a game, highlight the square the mouse is over, if the squarehas a piece with valid moves
+        # If there's no selected piece, and we're in a game, highlight the square the mouse is over, if the square has a piece with valid moves
         if game.inGame and len(selectedPiece) == 0:
             mousePos = pygame.mouse.get_pos()
             # Get the pieces the mouse is over
