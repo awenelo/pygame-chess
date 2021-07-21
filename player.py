@@ -55,7 +55,8 @@ class Players():
             player.make_active()
 
     def empty(self):
-        self.players = list()
+        # Reset ourselves
+        self.__init__()
 
     # Get the first player that's active
     def get_active_player(self):
