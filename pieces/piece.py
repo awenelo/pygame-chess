@@ -262,8 +262,10 @@ class Piece(pygame.sprite.Sprite):
         return newRect.collidepoint(point)
 
     def capture(self):
-        # Kills the piece, leaving it in place
+        # Kill the piece, leaving it in place
         self.dead = True
+        # Then, remove it from all groups, leaving it for garbage collection
+        self.kill()
 
 # Sprite group class, adds some extra functionality to the default class
 class PieceGroup(pygame.sprite.Group):
