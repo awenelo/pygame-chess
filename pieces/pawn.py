@@ -48,19 +48,13 @@ class Pawn(Piece):
         elif abs(self.squarex-targetSquare[0]) > 1:
             return False
 
-        # Check that if we're moving forward 2, we're not leaping over another piece
-        if abs(self.squarey-targetSquare[1]) == 2:
-            if not super().is_valid_move((targetSquare[0], self.squarey-yDirection[0]), gamePieces, board, capture=False, ignoreCheck=True):
-                return False
-
         # Store if we can move to the targetSquare if we're capturing, and if we're not capturing
-        noCaptureTargetSquare = super().is_valid_move(targetSquare, gamePieces, board, capture=False)
-        captureTargetSquare = super().is_valid_move(targetSquare, gamePieces, board, capture=True)
+        noCaptureTargetSquare = super().is_valid_move(targetSquare, gamePieces, board, capture=False, ignoreCheck=True)
+        captureTargetSquare = super().is_valid_move(targetSquare, gamePieces, board, capture=True, ignoreCheck=True)
 
         # If we're moving forwards, check that we can move without capturing
         if self.squarex == targetSquare[0] and not noCaptureTargetSquare:
             return False
-        
 
         # If we're moving horizontally, check that we need to capture to move
         if self.squarex != targetSquare[0]:
@@ -79,7 +73,12 @@ class Pawn(Piece):
                 else:
                     # We haven't found any pawns that meet our needs, return False
                     return False
-
+                
+        # Check that if we're moving forward 2, we're not leaping over another piece
+        if abs(self.squarey-targetSquare[1]) == 2:
+            if not super().is_valid_move((targetSquare[0], self.squarey-yDirection[0]), gamePieces, board, capture=False, ignoreCheck=True):
+                return False
+            
         # Check that Piece doesn't have something against moving here
         if not super().is_valid_move(targetSquare, gamePieces, board, capture=capture, ignoreCheck=ignoreCheck):
             return False
