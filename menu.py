@@ -15,6 +15,8 @@ class Menu():
         self.menu_items.empty()
         # Add the start button
         self.menu_items.add(menu_items.StartButton())
+        # Add the title text
+        self.menu_items.add(menu_items.TitleText())
 
     # Go into a game
     def game_menu(self):
