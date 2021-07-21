@@ -29,6 +29,9 @@ def main():
     # Create a menu object
     menu = Menu()
 
+    # Go to the main menu
+    menu.main_menu()
+
     # Create a game object
     game = Game()
 
