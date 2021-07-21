@@ -54,6 +54,9 @@ class Players():
         if player.playerNumber: # 1(True) is white
             player.make_active()
 
+    def empty(self):
+        self.players = list()
+
     # Get the first player that's active
     def get_active_player(self):
         for player in self.players:

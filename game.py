@@ -1,4 +1,5 @@
 import pieces
+import player
 
 # Game management class - controls starting, stopping and creating games
 class Game():
@@ -8,6 +9,9 @@ class Game():
 
         # Create a group to store game pieces
         self.gamePieces = pieces.PieceGroup()
+
+        # Create a group to store the players
+        self.players = player.Players()
 
     # Start a game, adds gamePieces to pieces
     def start_game(self):
@@ -33,4 +37,13 @@ class Game():
             for position in range(1,9):
                 self.gamePieces.add(pieces.Pawn((position, 2), False))
                 self.gamePieces.add(pieces.Pawn((position, 7), True))
+                
+            # Add players
+            self.players.add(player.Player(1))
+            self.players.add(player.Player(0))
 
+    # Stop a game, clear gamePieces and players
+    def end_game(self):
+        self.inGame = False
+        self.gamePieces.empty()
+        self.players.empty()

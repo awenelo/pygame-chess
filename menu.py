@@ -8,25 +8,32 @@ class Menu():
     def __init__(self):
         
         # Store where the places that we can click are
-        self.menu_items = pygame.sprite.Group()
+        self.menu_items = []
 
     # Got back to the main menu
     def main_menu(self):
-        self.menu_items.empty()
+        self.menu_items = list()
         # Add the start button
-        self.menu_items.add(menu_items.StartButton())
+        self.menu_items.append(menu_items.StartButton())
         # Add the title text
-        self.menu_items.add(menu_items.TitleText())
+        self.menu_items.append(menu_items.TitleText())
 
     # Go into a game
-    def game_menu(self):
-        self.menu_items.empty()
+    def game_screen(self):
+        self.menu_items = list()
+        self.menu_items.append(menu_items.MenuButton())
 
+    # Open the quit and settings menu above a game
+    def game_menu(self):
+        self.menu_items = list()
+        self.menu_items.append(menu_items.MenuXButton())
+        self.menu_items.append(menu_items.MenuQuit())
+        self.menu_items.append(menu_items.MenuBackground())
 
     # Draw function, draws whatever the current menu screen is
     def draw(self, screen):
         # Draw all the menu items
-        for sprite in self.menu_items:
+        for sprite in self.menu_items[::-1]:
             sprite.draw(screen)
             
 
@@ -36,12 +43,9 @@ class Menu():
 
     # MOUSEDOWN event handler
     def mouse_down(self, pos, game):
-        if not game.inGame:
-            # If there's a on a click target and we're not in a game, run that click target's click function
-            for target in self.menu_items:
-                if target.rect.collidepoint(pos):
-                    target.click(game, self)
-                    return True
-            return False
-        else:
-            return False
+        # If there's a click that we can trigger, trigger that, otherwise, let a piece be selected
+        for target in self.menu_items:
+            if target.rect.collidepoint(pos):
+                target.click(game, self)
+                return True
+        return False

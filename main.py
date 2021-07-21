@@ -20,11 +20,6 @@ def main():
     
     # Set the screen size
     screen = pygame.display.set_mode((configs.WIDTH, configs.HEIGHT))
-        
-    # Create players and add them to a list of players
-    players = Players()
-    players.add(Player(1))
-    players.add(Player(0))
 
     # Create a menu object
     menu = Menu()
@@ -91,9 +86,9 @@ def main():
                             selectedPiece[0].rect.y//configs.SQUARE_SIZE
                             )
                         # Check if the square we're moving to is valid
-                        if players.is_valid_move(selectedPiece[0], targetSquare, game.gamePieces, board, capture=True):                  
+                        if game.players.is_valid_move(selectedPiece[0], targetSquare, game.gamePieces, board, capture=True):                  
                             # If so, move to the square
-                            players.move(selectedPiece[0], recorder, board, targetSquare[0], targetSquare[1], game.gamePieces, countMovement=True)
+                            game.players.move(selectedPiece[0], recorder, board, targetSquare[0], targetSquare[1], game.gamePieces, countMovement=True)
 
                             # Store that we've made a move
                             moveMade = True
@@ -110,7 +105,7 @@ def main():
                         while len(selectedPiece)>0:
                             selectedPiece[0].select()
                             board.remove_highlights()
-                            if players.highlight_moves(selectedPiece[0], game.gamePieces, board):
+                            if game.players.highlight_moves(selectedPiece[0], game.gamePieces, board):
                                 break
                             selectedPiece[0].deselect()
                             selectedPiece.pop(0)
@@ -125,7 +120,7 @@ def main():
                         while len(selectedPiece)>0:
                             selectedPiece[0].select()
                             board.remove_highlights()
-                            if players.highlight_moves(selectedPiece[0], game.gamePieces, board):
+                            if game.players.highlight_moves(selectedPiece[0], game.gamePieces, board):
                                 break
                             selectedPiece[0].deselect()
                             selectedPiece.pop(0)
@@ -140,7 +135,7 @@ def main():
             # Get the pieces the mouse is over
             for piece in game.gamePieces.spriteCollidedWithPoint(mousePos):
                 # Check if there's a move that can be highlighted
-                if players.highlight_moves(piece, game.gamePieces, board):
+                if game.players.highlight_moves(piece, game.gamePieces, board):
                     # If there is, clear the highlights and highlight the square the mouse is over
                     board.remove_other_highlight_points(mousePos)
                     board.highlight_point(mousePos)
@@ -154,33 +149,27 @@ def main():
         screen.fill((255,255,255))
         
         # Draw the board
-        board.draw(screen, pygame.mouse.get_pos() if len(selectedPiece) == 0 else selectedPiece[0].rect.center, nameSquare=False)
-            
-        # If we're in a game,
-        if game.inGame:
-            # Update the game pieces
-            game.gamePieces.update(game.gamePieces, board, moveMade, players=players)
+        board.draw(screen, pygame.mouse.get_pos() if len(selectedPiece) == 0 else selectedPiece[0].rect.center, nameSquare=game.inGame)
+        # Update the game pieces
+        game.gamePieces.update(game.gamePieces, board, moveMade, players=game.players)
 
-            # Update the players
-            players.update(game.gamePieces)
+        # Update the players
+        game.players.update(game.gamePieces)
 
-            # Draw the game pieces
-            game.gamePieces.draw(screen, selectedPiece=selectedPiece)
+        # Draw the game pieces
+        game.gamePieces.draw(screen, selectedPiece=selectedPiece)
 
-            # Draw the player information
-            players.draw(screen)
+        # Draw the player information
+        game.players.draw(screen)
 
-            # Draw the selectedPiece above everything else, if there is a selected piece
-            if len(selectedPiece)>0:
-                selectedPiece[0].draw(screen)
-
-        # Otherwise,
-        else:
-            # Update the menu, then draw it
-            menu.update()
-            menu.draw(screen)
+        # Draw the selectedPiece above everything else, if there is a selected piece
+        if len(selectedPiece)>0:
+            selectedPiece[0].draw(screen)
 
         # No matter what,
+        # Update the menu, then draw it
+        menu.update()
+        menu.draw(screen)
         # Draw the amount of ms since the last frame in the bottom left, if we should
         if showTimeSinceTick:
             txt = pygame.font.Font(configs.FONT, 25).render(str(timeSinceTick), True, (0,0,0))
