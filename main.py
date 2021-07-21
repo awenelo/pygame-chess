@@ -174,8 +174,8 @@ def main():
         if showTimeSinceTick:
             txt = pygame.font.Font(configs.FONT, 25).render(str(timeSinceTick), True, (0,0,0))
             txt_rect = txt.get_rect()
-            txt_rect.bottom = configs.HEIGHT
-            txt_rect.left = 0
+            txt_rect.right = configs.WIDTH
+            txt_rect.top = 0
             screen.blit(txt, txt_rect)
 
         # Show the screen
