@@ -7,12 +7,9 @@ import pygame
 
 # Import internal modules
 from board import Board
-import pieces
 import configs
-from player import Player, Players
 from menu import Menu
 from game import Game
-from PGN_recorder import Recorder
 
 def main():
     # Initialize all pygame modules
@@ -28,10 +25,7 @@ def main():
     menu.main_menu()
 
     # Create a game object
-    game = Game()
-
-    # Create a recorder object
-    recorder = Recorder()
+    game = Game(menu)
 
     # Create a board object, and pass it the correct width and height, images and center is on the screen
     board = Board(
@@ -88,7 +82,7 @@ def main():
                         # Check if the square we're moving to is valid
                         if game.players.is_valid_move(selectedPiece[0], targetSquare, game.gamePieces, board, capture=True):                  
                             # If so, move to the square
-                            game.players.move(selectedPiece[0], recorder, board, targetSquare[0], targetSquare[1], game.gamePieces, countMovement=True)
+                            game.players.move(selectedPiece[0], game.recorder, board, targetSquare[0], targetSquare[1], game.gamePieces, countMovement=True)
 
                             # Store that we've made a move
                             moveMade = True
@@ -125,9 +119,13 @@ def main():
                             selectedPiece[0].deselect()
                             selectedPiece.pop(0)
             elif event.type == pygame.KEYDOWN:
-                # If there is a key pushed, check if it's D, if it is, enable the time since the last frame
-                if event.key == pygame.K_d:
+                # If there is a key pushed, check if it's crtl-D, if it is, enable the time since the last frame
+                if event.key == pygame.K_d and (event.mod & pygame.KMOD_CTRL):
                     showTimeSinceTick = not showTimeSinceTick
+                # Otherwise, check if the recorder wants key presses
+                elif game.onlineGame:
+                    if game.recorder.status == "get_key":
+                        game.recorder.add_char(event.unicode, menu, backspace=event.key == pygame.K_BACKSPACE)
                         
         # If there's no selected piece, and we're in a game, highlight the square the mouse is over, if the square has a piece with valid moves
         if game.inGame and len(selectedPiece) == 0:
@@ -170,6 +168,11 @@ def main():
         # Update the menu, then draw it
         menu.update()
         menu.draw(screen)
+
+        # Update the game, then draw anything for it
+        game.update()
+        game.draw(screen)
+        
         # Draw the amount of ms since the last frame in the bottom left, if we should
         if showTimeSinceTick:
             txt = pygame.font.Font(configs.FONT, 25).render(str(timeSinceTick), True, (0,0,0))

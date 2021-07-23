@@ -1,9 +1,11 @@
 import pieces
 import player
+from PGN_recorder import Recorder
+from online_recorder import Recorder as OnlineRecorder
 
 # Game management class - controls starting, stopping and creating games
 class Game():
-    def __init__(self):
+    def __init__(self, menu):
         # Store if we're in a game
         self.inGame = False
 
@@ -13,8 +15,18 @@ class Game():
         # Create a group to store the players
         self.players = player.Players()
 
+        # Create a variable to store our recorder
+        self.recorder = None
+
+        # Store if we're in an online game, and which side we are: 0 - black, 1 - white
+        self.onlineGame = False
+        self.onlineSide = 1
+
+        # Store the menu
+        self.menu = menu
+
     # Start a game, adds gamePieces to pieces
-    def start_game(self):
+    def start_game(self, online=False):
         if not self.inGame:
             self.inGame = True
             # Create game pieces
@@ -41,9 +53,29 @@ class Game():
             # Add players
             self.players.add(player.Player(1))
             self.players.add(player.Player(0))
+            # Create a new Recorder object, if there was one previously, throw it out
+            if not online:
+                self.recorder = Recorder()
+                self.onlineGame = False
+
+    # Create a new online recorder object
+    def setup_game(self, onlineGameKey, talkToServer=True):
+        self.recorder = OnlineRecorder(onlineGameKey, False, talkToServer=talkToServer)
+        self.onlineGame = True
 
     # Stop a game, clear gamePieces and players
     def end_game(self):
         self.inGame = False
         self.gamePieces.empty()
         self.players.empty()
+        self.recorder = None
+
+    # Update the recorder object, if we're online
+    def update(self):
+        if self.onlineGame:
+            self.recorder.update(self, self.menu)
+
+    # Draw the recorder object, if there's anything to draw
+    def draw(self, screen):
+        if self.onlineGame:
+            self.recorder.draw(screen)

@@ -1,4 +1,6 @@
 import pygame
+from secrets import token_urlsafe
+import requests
 
 import configs
 
@@ -69,15 +71,54 @@ class StartButton(MenuItem):
     # Start button for the game
     def __init__(self):
         # Initialize the menu item
-        super().__init__("images/start_button.png", (200, 50), (configs.WIDTH//2, configs.HEIGHT//2+125))
+        super().__init__("images/start_button.png", (200, 50), (configs.WIDTH//2, configs.HEIGHT//2+75))
         
     # On click, start the game
     def click(self, game, menu):
         menu.game_screen()
         game.start_game()
 
+class MoreButton(MenuItem):
+    # Button to go to a page with more options
+    def __init__(self):
+        super().__init__("images/more_button.png", (200, 50), (configs.WIDTH//2, configs.HEIGHT//2+175))
+
+    # On click, go to the more options menu
+    def click(self, game, menu):
+        menu.more_options_screen()
+
+class NewOnlineGameButton(MenuItem):
+    # Button to create a new online game
+    def __init__(self):
+        super().__init__("images/new_online_game_button.png", (200, 50), (configs.WIDTH//2, 175))
+
+    # On click, create a random game key and create a new game
+    def click(self, game, menu):
+        menu.clear()
+        game.setup_game(token_urlsafe(4))
+
+class JoinOnlineGameButton(MenuItem):
+    # Button to join an online game at random
+    def __init__(self):
+        super().__init__("images/join_online_game_button.png", (200, 50), (configs.WIDTH//2, 275))
+        
+    # Join a game at random
+    def click(self, game, menu):
+        # Get a game key
+        menu.clear()
+        game.setup_game("", talkToServer=False)
+
+class BackButton(MenuItem):
+    # Button to go back to the main menu
+    def __init__(self):
+        super().__init__("images/back_button.png", (200, 50), (configs.WIDTH//2, 75))
+
+    # On click, go back to the main menu
+    def click(self, game, menu):
+        menu.main_menu()
+    
 class TitleText(MenuItem):
     # Title of the game
     def __init__(self):
         # Initialize the menu item
-        super().__init__("images/title_text.png", (300, 210), (configs.WIDTH//2, 180))
+        super().__init__("images/title_text.png", (300, 210), (configs.WIDTH//2, 170))

@@ -15,7 +15,7 @@ class Menu():
         self.menu_items = list()
         # Add the start button
         self.menu_items.append(menu_items.StartButton())
-        # Add the title text
+        self.menu_items.append(menu_items.MoreButton())
         self.menu_items.append(menu_items.TitleText())
 
     # Go into a game
@@ -29,6 +29,17 @@ class Menu():
         self.menu_items.append(menu_items.MenuXButton())
         self.menu_items.append(menu_items.MenuQuit())
         self.menu_items.append(menu_items.MenuBackground())
+
+    # Open a more options page
+    def more_options_screen(self):
+        self.menu_items = list()
+        self.menu_items.append(menu_items.BackButton())
+        self.menu_items.append(menu_items.NewOnlineGameButton())
+        self.menu_items.append(menu_items.JoinOnlineGameButton())
+
+    # Clear the menu
+    def clear(self):
+        self.menu_items = list()
 
     # Draw function, draws whatever the current menu screen is
     def draw(self, screen):
