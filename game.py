@@ -25,6 +25,9 @@ class Game():
         # Store the menu
         self.menu = menu
 
+        # Give the menu ourselves
+        self.menu.game = self
+
     # Start a game, adds gamePieces to pieces
     def start_game(self, online=False):
         if not self.inGame:

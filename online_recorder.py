@@ -142,6 +142,7 @@ class Recorder():
             else:
                 print("The game you were in no longer exists. You were sent back to the main menu")
                 menu.main_menu()
+                game.__init__(menu)
 
             if self.status != previousStatus:
                 menu.game_screen()
@@ -162,5 +163,6 @@ class Recorder():
         if self.join_game(True, self.pendingKey):
             menu.game_screen()
             self.status = "playing"
+            menu.game.start_game(online=True)
             
             

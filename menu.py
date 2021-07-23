@@ -10,6 +10,9 @@ class Menu():
         # Store where the places that we can click are
         self.menu_items = []
 
+        # Store the game
+        self.game = None
+
     # Got back to the main menu
     def main_menu(self):
         self.menu_items = list()
