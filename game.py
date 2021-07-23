@@ -69,6 +69,7 @@ class Game():
         self.gamePieces.empty()
         self.players.empty()
         self.recorder = None
+        self.onlineGame = False
 
     # Update the recorder object, if we're online
     def update(self):
