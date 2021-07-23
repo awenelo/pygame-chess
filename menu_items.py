@@ -1,5 +1,5 @@
 import pygame
-from secrets import token_urlsafe
+from secrets import token_hex
 import requests
 
 import configs
@@ -95,7 +95,7 @@ class NewOnlineGameButton(MenuItem):
     # On click, create a random game key and create a new game
     def click(self, game, menu):
         menu.clear()
-        game.setup_game(token_urlsafe(4))
+        game.setup_game(token_hex(3))
 
 class JoinOnlineGameButton(MenuItem):
     # Button to join an online game at random

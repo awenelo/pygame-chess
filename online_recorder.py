@@ -145,7 +145,9 @@ class Recorder():
                 game.__init__(menu)
 
             if self.status != previousStatus:
-                menu.game_screen()
+                if self.status == "playing":
+                    menu.game_screen()
+                    game.start_game(online=True)
                 
         if self.status == "get_key":
             self.showUnderline = monotonic()%1 >= 0.5
@@ -156,7 +158,8 @@ class Recorder():
             if backspace:
                 self.pendingKey = self.pendingKey[:-1]
             else:
-                self.pendingKey += char
+                # Always add the lowercase version, since the hex values are generated as numbers and lowercase characters
+                self.pendingKey += char.lower()
 
         # Then, check if it's a valid key
         # If it is, then join that game
