@@ -94,7 +94,7 @@ class NewOnlineGameButton(MenuItem):
 
     # On click, create a random game key and create a new game
     def click(self, game, menu):
-        menu.clear()
+        menu.game_screen()
         game.setup_game(token_hex(3))
 
 class JoinOnlineGameButton(MenuItem):
