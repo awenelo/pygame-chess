@@ -15,6 +15,9 @@ class Recorder():
             # Join the game
             self.join_game(joinGame, onlineGameKey)
 
+            # Make us player 1
+            self.player = 1
+
         else:
             # Set our status to getting key
             self.status = "get_key"
@@ -48,19 +51,51 @@ class Recorder():
 
         # Mark if the next move is completing a promotion
         self.promotion = False
-        self.pendingInstruction = ""
+        self.pendingMoveTo = None
+        self.pendingPieceName = ""
+        self.pendingPiecePos = None
 
-    def record_move(self, piece, moveTo, gamePieces, board, promotion=False):
-        # Send the request
-        req = requests.put(
-            self.url + f"/gamemoves/{self.game_key}/{self.move}.json",
-            dumps({"piece_name":piece.name,
-                   "piece_pos":(piece.squarex*configs.SQUARE_SIZE+configs.SQUARE_SIZE//2, piece.squarey*configs.SQUARE_SIZE+configs.SQUARE_SIZE//2),
-                   "move_to":moveTo,
-                   })
-            )
+    def record_move(self, piece, moveTo, gamePieces, board):
+        # If this was a promotion, send the previous data along with this piece's name
+        if self.promotion:
+            req = requests.put(
+                self.url + f"/gamemoves/{self.game_key}",
+                data=dumps({"piece_name": self.pendingPieceName,
+                            "piece_pos": self.pendingPiecePos,
+                            "move_to": self.pendingMoveTo,
+                            "move_number": self.move,
+                            "player_number": self.player,
+                            "player_key": self.player_key,
+                            "promotion": True,
+                            "promotion_name": piece.name
+                            }),
+                headers={"Content-Type": "application/json"}
+                )
+            return
+        
+        # Determine if the move is a promotion
+        if piece.name == "P" and moveTo[1] in [1,8]:
+            # The move is a promotion, just store the data without sending anything
+            self.pendingMoveTo = moveTo
+            self.pendingPieceName = piece.name
+            self.pendingPiecePos = (piece.squarex*configs.SQUARE_SIZE+configs.SQUARE_SIZE//2, piece.squarey*configs.SQUARE_SIZE+configs.SQUARE_SIZE//2)
+            self.promotion = True
+        else:
+            # Send the request
+            req = requests.put(
+                self.url + f"/gamemoves/{self.game_key}",
+                data=dumps({"piece_name": piece.name,
+                            "piece_pos": (piece.squarex*configs.SQUARE_SIZE+configs.SQUARE_SIZE//2, piece.squarey*configs.SQUARE_SIZE+configs.SQUARE_SIZE//2),
+                            "move_to": moveTo,
+                            "move_number": self.move,
+                            "player_number": self.player,
+                            "player_key": self.player_key,
+                            "promotion": False
+                       }),
+                headers={"Content-Type": "application/json"}
+                )
 
-        self.move += 1
+            self.move += 1
 
     def join_game(self, joinGame, onlineGameKey):
         self.game_key = onlineGameKey
@@ -163,9 +198,14 @@ class Recorder():
 
         # Then, check if it's a valid key
         # If it is, then join that game
-        if self.join_game(True, self.pendingKey):
-            menu.game_screen()
-            self.status = "playing"
-            menu.game.start_game(online=True)
+        if len(self.pendingKey) == 6:
+            if self.join_game(True, self.pendingKey):
+                menu.game_screen()
+                self.status = "playing"
+                menu.game.start_game(online=True)
+                self.player = 2
+            else:
+                print("Sorry, that key's invalid. Please try again")
+                self.pendingKey = ""
             
             
