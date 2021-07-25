@@ -78,6 +78,8 @@ class Recorder():
                             }),
                 headers={"Content-Type": "application/json"}
                 )
+            if req.status_code == 200:
+                self.move += 1
             self.update(self.game, self.menu)
             if req.status_code != 200:
                 return False
@@ -104,6 +106,8 @@ class Recorder():
                        }),
                 headers={"Content-Type": "application/json"}
                 )
+            if req.status_code == 200:
+                self.move += 1
             self.update(self.game, self.menu)
             if req.status_code != 200:
                 return False
@@ -206,11 +210,10 @@ class Recorder():
                             break
                     # If there's no piece that matched, raise an error
                     else:
+                        print("Piece at:", results["pieceLocation"])
+                        print("Piece name:", results["pieceName"])
                         raise Exception("No piece matching needed descriptor found in game, synchronization between instances of game lost.")
-
-                    # Otherwise, move that piece
                     
-
                     # If the move is a promotion, move the promotion piece to the correct square
                     if results["promotion"]:
                         for piece in game.gamePieces:
