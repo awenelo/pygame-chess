@@ -105,7 +105,7 @@ class JoinOnlineGameButton(MenuItem):
     # Join a game at random
     def click(self, game, menu):
         # Get a game key
-        menu.clear()
+        menu.game_screen()
         game.setup_game("", talkToServer=False)
 
 class BackButton(MenuItem):

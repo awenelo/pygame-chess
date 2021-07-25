@@ -163,16 +163,17 @@ def main():
         # Draw the selectedPiece above everything else, if there is a selected piece
         if len(selectedPiece)>0:
             selectedPiece[0].draw(screen)
-
+            
         # No matter what,
-        # Update the menu, then draw it
-        menu.update()
-        menu.draw(screen)
-
         # Update the game, then draw anything for it
         game.update()
         game.draw(screen)
         
+
+        # Update the menu, then draw it
+        menu.update()
+        menu.draw(screen)
+
         # Draw the amount of ms since the last frame in the bottom left, if we should
         if showTimeSinceTick:
             txt = pygame.font.Font(configs.FONT, 25).render(str(timeSinceTick), True, (0,0,0))

@@ -72,6 +72,7 @@ class Recorder():
             self.promotion = False
         if not piece.white: # If the piece is black (we just created a new line), increment our move counter by 1
             self.move += 1
+        return True
 
     # Returns the name of the square
     def get_rank_file(self, square):

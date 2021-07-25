@@ -9,7 +9,7 @@ import configs
 class Recorder():
     # Recorder for online games
     # Instead of logging games locally, we send the data to a Firebase RealTime Database
-    def __init__(self, onlineGameKey, joinGame, talkToServer=True):
+    def __init__(self, onlineGameKey, joinGame, game, menu, talkToServer=True):
         self.url = configs.SERVER_URL
         if talkToServer:
             # Join the game
@@ -27,8 +27,11 @@ class Recorder():
             # Store the part of the key we have
             self.pendingKey = ""
 
+            # Set us to player 2
+            self.player = 2
+
         # Count which move we're on
-        self.move = 1
+        self.move = 0
 
         # Store the angle of the loading circle
         self.loadingCircleAngle = 0
@@ -55,6 +58,10 @@ class Recorder():
         self.pendingPieceName = ""
         self.pendingPiecePos = None
 
+        # Store the game and menu
+        self.game = game
+        self.menu = menu
+
     def record_move(self, piece, moveTo, gamePieces, board):
         # If this was a promotion, send the previous data along with this piece's name
         if self.promotion:
@@ -71,7 +78,10 @@ class Recorder():
                             }),
                 headers={"Content-Type": "application/json"}
                 )
-            return
+            self.update(self.game, self.menu)
+            if req.status_code != 200:
+                return False
+            return True
         
         # Determine if the move is a promotion
         if piece.name == "P" and moveTo[1] in [1,8]:
@@ -94,8 +104,10 @@ class Recorder():
                        }),
                 headers={"Content-Type": "application/json"}
                 )
-
-            self.move += 1
+            self.update(self.game, self.menu)
+            if req.status_code != 200:
+                return False
+            return True
 
     def join_game(self, joinGame, onlineGameKey):
         self.game_key = onlineGameKey
@@ -174,6 +186,40 @@ class Recorder():
             if returnedData["gameFound"]:
                 self.status = returnedData["status"]
                 self.nextPlayer = returnedData["nextPlayerTurn"]
+                if returnedData["lastMove"] != self.move and returnedData["lastMove"]!=0:
+                    # If the last move isn't our last move, and it's not 0, make the last move locally
+                    self.move = returnedData["lastMove"]
+                    req = requests.get(
+                        self.url + "/gamemoves/" + self.game_key,
+                        params={"move_number": self.move}
+                        )
+                    if req.status_code != 200:
+                        self.lastUpdateFailed = True
+                        self.move -= 1
+                        return
+                    results = req.json()
+                    # Find the piece to move
+                    for piece in game.gamePieces.spriteCollidedWithPoint(results["pieceLocation"]):
+                        if piece.name == results["pieceName"]:
+                            piece.move(results["moveToSquare"][0], results["moveToSquare"][1], game.gamePieces, countMovement=True)
+                            # If we find a piece that matches our needs, do the move
+                            break
+                    # If there's no piece that matched, raise an error
+                    else:
+                        raise Exception("No piece matching needed descriptor found in game, synchronization between instances of game lost.")
+
+                    # Otherwise, move that piece
+                    
+
+                    # If the move is a promotion, move the promotion piece to the correct square
+                    if results["promotion"]:
+                        for piece in game.gamePieces:
+                            if piece.squarey == 9:
+                                if piece.name == results["promotionPiece"]:
+                                    piece.move(results["moveTo"][0], results["moveTo"][1], game.gamePieces, countMovement=True)
+                                    break
+                        
+                    
             else:
                 print("The game you were in no longer exists. You were sent back to the main menu")
                 menu.main_menu()

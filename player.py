@@ -92,8 +92,9 @@ class Players():
         return piece.highlight_moves(*args, **kwargs)
 
     def move(self, piece, recorder, board, *args, **kwargs):
-        # Record the move
-        recorder.record_move(piece, (args[0], args[1]), args[2], board)
+        # Record the move, check that the move is approved by the server
+        if not recorder.record_move(piece, (args[0], args[1]), args[2], board):
+            return
         # Clear that the next move needs to be a promotion
         self.nextMovePromotion = False
         if piece.move(*args, **kwargs):

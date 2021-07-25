@@ -63,7 +63,7 @@ class Game():
 
     # Create a new online recorder object
     def setup_game(self, onlineGameKey, talkToServer=True):
-        self.recorder = OnlineRecorder(onlineGameKey, False, talkToServer=talkToServer)
+        self.recorder = OnlineRecorder(onlineGameKey, False, self, self.menu, talkToServer=talkToServer)
         self.onlineGame = True
 
     # Stop a game, clear gamePieces and players
