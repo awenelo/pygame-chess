@@ -104,6 +104,7 @@ class Recorder():
             self.pendingPieceName = piece.name
             self.pendingPiecePos = (piece.squarex*configs.SQUARE_SIZE+configs.SQUARE_SIZE//2, piece.squarey*configs.SQUARE_SIZE+configs.SQUARE_SIZE//2)
             self.promotion = True
+            return True
         else:
             # Send the request
             req = requests.put(
@@ -331,7 +332,7 @@ class Recorder():
                     for piece in game.gamePieces:
                         if piece.squarey == 9:
                             if piece.name == results["promotionPiece"]:
-                                piece.move(results["moveTo"][0], results["moveTo"][1], game.gamePieces, countMovement=True)
+                                piece.move(results["moveToSquare"][0], results["moveToSquare"][1], game.gamePieces, countMovement=True)
                                 break
             # Check if we need to show the draw screen
             if self.result == ("oneProposedDraw" if self.player == 2 else "twoProposedDraw"):
