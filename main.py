@@ -149,7 +149,7 @@ def main():
         game.gamePieces.update(game.gamePieces, board, moveMade or (False if not game.onlineGame else game.recorder.moveMade), players=game.players)
 
         # Check if a king is in check, and report it to the server
-        if moveMade or game.onlineGame:
+        if moveMade and game.onlineGame:
             for king in game.gamePieces.get_kings(False):
                 if king.checkmate:
                     game.recorder.request_lose(game, menu, False)
