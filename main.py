@@ -144,14 +144,27 @@ def main():
             else:
                 # If no piece that the mouse is over has a valid move, clear all highlights
                 board.remove_highlights()
+
+        # Update the game pieces
+        game.gamePieces.update(game.gamePieces, board, moveMade or (False if not game.onlineGame else game.recorder.moveMade), players=game.players)
+
+        # Check if a king is in check, and report it to the server
+        if moveMade or game.onlineGame:
+            for king in game.gamePieces.get_kings(False):
+                if king.checkmate:
+                    game.recorder.request_lose(game, menu, False)
+                    break
+            for king in game.gamePieces.get_kings(True):
+                if king.checkmate:
+                    game.recorder.request_lose(game, menu, True)
+                    break
         
         # Clear the screen
         screen.fill((255,255,255))
         
         # Draw the board
         board.draw(screen, pygame.mouse.get_pos() if len(selectedPiece) == 0 else selectedPiece[0].rect.center, nameSquare=game.inGame)
-        # Update the game pieces
-        game.gamePieces.update(game.gamePieces, board, moveMade or (False if not game.onlineGame else game.recorder.moveMade), players=game.players)
+
 
         # Update the players
         game.players.update(game.gamePieces)

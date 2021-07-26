@@ -67,6 +67,14 @@ class MenuQuit(MenuItem):
         menu.main_menu()
         game.end_game()
 
+class ProposeDrawButton(MenuItem):
+    # Button to request that the game be ended in a draw
+    def __init__(self):
+        super().__init__("images/propose_draw_button.png", (120, 40), (65, configs.HEIGHT-75))
+
+    def click(self, game, menu):
+        game.recorder.propose_draw(game, menu)
+
 class StartButton(MenuItem):
     # Start button for the game
     def __init__(self):

@@ -235,6 +235,40 @@ class Recorder():
             self.update(game, menu, force=True)
             menu.game_screen()
 
+    def propose_draw(self, game, menu):
+        # Propose a draw
+        req = requests.put(
+            self.url + "/gameresult/" + self.game_key,
+            data=dumps({"result":("oneProposedDraw" if self.player == 1 else "twoProposedDraw"),
+             "player_key":self.player_key
+             }
+            ),
+        headers={"Content-Type": "application/json"}
+        )
+        if req.status_code != 200:
+            print("The server encountered an error, and couldn't complete your request. Please try proposing a the draw again.")
+        else:
+            self.update(game, menu, force=True)
+            menu.game_screen()
+
+    def request_lose(self, game, menu, white):
+        if white != self.player % 2:
+            return
+
+        req = requests.put(
+            self.url + "/gameresult/" + self.game_key,
+            data=dumps({"result":"whiteLose" if white else "blackLose",
+                        "player_key":self.player_key
+                        }
+                       ),
+            headers={"Content-Type": "application/json"}
+        )
+        if req.status_code != 200:
+            print("The server encountered an error, and couldn't complete your request. Please try proposing a the draw again.")
+        else:
+            self.update(game, menu, force=True)
+            menu.game_screen()
+
     def update(self, game, menu, force=False):
         # Get the status of the game, if it's been at least 5 seconds since we last did and we're not still getting a key
         if force or (self.status != "get_key" and monotonic() - self.lastUpdate > 5):
@@ -261,6 +295,12 @@ class Recorder():
             self.status = returnedData["status"]
             self.nextPlayer = returnedData["nextPlayerTurn"]
             self.result = returnedData["result"]
+            # Check if we started playing
+            if self.status != previousStatus:
+                if self.status == "playing":
+                    menu.game_screen()
+                    game.start_game(online=True)
+                    
             if returnedData["lastMove"] != self.move and returnedData["lastMove"]!=0:
                 # If the last move isn't our last move, and it's not 0, make the last move locally
                 self.move = returnedData["lastMove"]
@@ -293,11 +333,6 @@ class Recorder():
                             if piece.name == results["promotionPiece"]:
                                 piece.move(results["moveTo"][0], results["moveTo"][1], game.gamePieces, countMovement=True)
                                 break
-
-            if self.status != previousStatus:
-                if self.status == "playing":
-                    menu.game_screen()
-                    game.start_game(online=True)
             # Check if we need to show the draw screen
             if self.result == ("oneProposedDraw" if self.player == 2 else "twoProposedDraw"):
                 menu.proposed_draw_screen()

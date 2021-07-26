@@ -30,6 +30,8 @@ class Menu():
     def game_menu(self):
         self.menu_items = list()
         self.menu_items.append(menu_items.MenuXButton())
+        if self.game.onlineGame and self.game.recorder.status == "playing":
+            self.menu_items.append(menu_items.ProposeDrawButton())
         self.menu_items.append(menu_items.MenuQuit())
         self.menu_items.append(menu_items.MenuBackground())
 
