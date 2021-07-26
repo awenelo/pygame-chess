@@ -40,6 +40,15 @@ class Menu():
         self.menu_items.append(menu_items.NewOnlineGameButton())
         self.menu_items.append(menu_items.JoinOnlineGameButton())
 
+    # A draw was proposed screen
+    def proposed_draw_screen(self):
+        self.menu_items = list()
+        self.menu_items.append(menu_items.AcceptDrawButton())
+        self.menu_items.append(menu_items.DeclineDrawButton())
+        self.menu_items.append(menu_items.DrawBox())
+        self.menu_items.append(menu_items.DrawBackground())
+        
+
     # Clear the menu
     def clear(self):
         self.menu_items = list()

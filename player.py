@@ -97,6 +97,8 @@ class Players():
         # Highlight valid moves
         # If we're in an online game, check against the recorder for which player should move, otherwise check against the players
         if game.onlineGame:
+            if game.recorder.result != "playing":
+                return False
             if piece.white != game.recorder.player % 2 or game.recorder.player != game.recorder.nextPlayer:
                 return False
         else:

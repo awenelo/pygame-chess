@@ -116,6 +116,34 @@ class BackButton(MenuItem):
     # On click, go back to the main menu
     def click(self, game, menu):
         menu.main_menu()
+
+class AcceptDrawButton(MenuItem):
+    # Button to accept a draw
+    def __init__(self):
+        super().__init__("images/accept_draw_button.png", (100, 50), (175, 287))
+
+    # On click, accept the draw proposal
+    def click(self, game, menu):
+        game.recorder.accept_draw(game, menu)
+
+class DeclineDrawButton(MenuItem):
+    # Button to decline a draw
+    def __init__(self):
+        super().__init__("images/decline_draw_button.png", (100, 50), (325, 287))
+
+    # On click, accept the draw proposal
+    def click(self, game, menu):
+        game.recorder.decline_draw(game, menu)
+
+class DrawBackground(MenuItem):
+    # Background for the draw popup
+    def __init__(self):
+        super().__init__("images/proposed_draw_background.png", (500, 500), (configs.WIDTH//2, configs.HEIGHT//2))
+
+class DrawBox(MenuItem):
+    # Box saying that a draw has been proposed
+    def __init__(self):
+        super().__init__("images/proposed_draw_box.png", (300, 150), (configs.WIDTH//2, configs.HEIGHT//2))
     
 class TitleText(MenuItem):
     # Title of the game

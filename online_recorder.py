@@ -15,12 +15,16 @@ class Recorder():
             # Join the game
             self.join_game(joinGame, onlineGameKey)
 
+            # Set our status to waiting
+            self.status = "waiting"
+
             # Make us player 1
             self.player = 1
 
         else:
             # Set our status to getting key
             self.status = "get_key"
+            
             # Store if the underline should be there or not
             self.showUnderline = True
 
@@ -29,6 +33,11 @@ class Recorder():
 
             # Set us to player 2
             self.player = 2
+
+
+        # Set our result to playing
+        self.result = "playing"
+
 
         # Count which move we're on
         self.move = 0
@@ -159,9 +168,22 @@ class Recorder():
             txtRect.centerx = configs.WIDTH//2
             txtRect.top = 12
             screen.blit(txt, txtRect)
-        elif self.status == "playing":
-            # If we're playing, display if it's our turn or our oponents turn
-            txt = font.render(("Your turn" if self.player == self.nextPlayer else "Opponent's turn"), True, (0,0,0))
+        elif self.status == "playing" or self.status == "ended":
+            # If we're playing, display if it's our turn or our oponents turn, or something's happening with result
+            if self.result == "playing":
+                txt = font.render(("Your turn" if self.player == self.nextPlayer else "Opponent's turn"), True, (0,0,0))
+            elif self.result == ("oneProposedDraw" if self.player == 1 else "twoProposedDraw"):
+                txt = font.render("You proposed a draw, waiting", True, (0,0,0))
+            elif self.result == ("oneProposedDraw" if self.player == 2 else "twoProposedDraw"):
+                txt = font.render("", True, (0,0,0))
+            elif self.result == "draw":
+                txt = font.render("Game over - Draw", True, (0,0,0))
+            elif self.result == ("whiteLose" if self.player == 1 else "blackLose"):
+                txt = font.render("Game over - you lose", True, (0,0,0))
+            elif self.result == ("blackLose" if self.player == 1 else "whiteLose"):
+                txt = font.render("Game over - you won!", True, (0,0,0))
+            else:
+                txt = font.render("Something went wrong", True, (0,0,0))
             txtRect = txt.get_rect()
             txtRect.centerx = configs.WIDTH//2
             txtRect.top = 12
@@ -178,6 +200,40 @@ class Recorder():
             loadingCircleRotatedRect = loadingCircleRotated.get_rect()
             loadingCircleRotatedRect.center = self.loadingCircleRect.center
             screen.blit(loadingCircleRotated, loadingCircleRotatedRect)
+
+    def accept_draw(self, game, menu):
+        # Accept a draw, set the state to a draw
+        req = requests.put(
+            self.url + "/gameresult/" + self.game_key,
+            data=dumps(
+                {"result":"draw",
+                 "player_key":self.player_key
+                 }
+                ),
+            headers={"Content-Type": "application/json"}
+            )
+        if req.status_code != 200:
+            print("The server encountered an error, and couldn't complete your request. Please try to accept the draw again.")
+        else:
+            self.update(game, menu, force=True)
+            menu.game_screen()
+
+    def decline_draw(self, game, menu):
+        # Decline a draw, return the state to playing
+        req = requests.put(
+            self.url + "/gameresult/" + self.game_key,
+            data=dumps(
+                {"result":"playing",
+                 "player_key":self.player_key
+                 }
+                ),
+            headers={"Content-Type": "application/json"}
+            )
+        if req.status_code != 200:
+            print("The server encountered an error, and couldn't complete your request. Please try declining the draw again.")
+        else:
+            self.update(game, menu, force=True)
+            menu.game_screen()
 
     def update(self, game, menu, force=False):
         # Get the status of the game, if it's been at least 5 seconds since we last did and we're not still getting a key
@@ -197,52 +253,54 @@ class Recorder():
                 return
             self.lastUpdateFailed = False
             returnedData = req.json()
-            if returnedData["gameFound"]:
-                self.status = returnedData["status"]
-                self.nextPlayer = returnedData["nextPlayerTurn"]
-                if returnedData["lastMove"] != self.move and returnedData["lastMove"]!=0:
-                    # If the last move isn't our last move, and it's not 0, make the last move locally
-                    self.move = returnedData["lastMove"]
-                    req = requests.get(
-                        self.url + "/gamemoves/" + self.game_key,
-                        params={"move_number": self.move}
-                        )
-                    if req.status_code != 200:
-                        self.lastUpdateFailed = True
-                        self.move -= 1
-                        return
-                    results = req.json()
-                    # Find the piece to move
-                    for piece in game.gamePieces.spriteCollidedWithPoint(results["pieceLocation"]):
-                        if piece.name == results["pieceName"]:
-                            piece.move(results["moveToSquare"][0], results["moveToSquare"][1], game.gamePieces, countMovement=True)
-                            self.moveMade = True
-                            # If we find a piece that matches our needs, do the move
-                            break
-                    # If there's no piece that matched, raise an error
-                    else:
-                        print("Piece at:", results["pieceLocation"])
-                        print("Piece name:", results["pieceName"])
-                        raise Exception("No piece matching needed descriptor found in game, synchronization between instances of game lost.")
-                    
-                    # If the move is a promotion, move the promotion piece to the correct square
-                    if results["promotion"]:
-                        for piece in game.gamePieces:
-                            if piece.squarey == 9:
-                                if piece.name == results["promotionPiece"]:
-                                    piece.move(results["moveTo"][0], results["moveTo"][1], game.gamePieces, countMovement=True)
-                                    break
-                        
-                    
-            else:
+            if not returnedData["gameFound"]:
                 print("The game you were in no longer exists. You were sent back to the main menu")
                 menu.main_menu()
                 game.__init__(menu)
+
+            self.status = returnedData["status"]
+            self.nextPlayer = returnedData["nextPlayerTurn"]
+            self.result = returnedData["result"]
+            if returnedData["lastMove"] != self.move and returnedData["lastMove"]!=0:
+                # If the last move isn't our last move, and it's not 0, make the last move locally
+                self.move = returnedData["lastMove"]
+                req = requests.get(
+                    self.url + "/gamemoves/" + self.game_key,
+                    params={"move_number": self.move}
+                    )
+                if req.status_code != 200:
+                    self.lastUpdateFailed = True
+                    self.move -= 1
+                    return
+                results = req.json()
+                # Find the piece to move
+                for piece in game.gamePieces.spriteCollidedWithPoint(results["pieceLocation"]):
+                    if piece.name == results["pieceName"]:
+                        piece.move(results["moveToSquare"][0], results["moveToSquare"][1], game.gamePieces, countMovement=True)
+                        self.moveMade = True
+                        # If we find a piece that matches our needs, do the move
+                        break
+                # If there's no piece that matched, raise an error
+                else:
+                    print("Piece at:", results["pieceLocation"])
+                    print("Piece name:", results["pieceName"])
+                    raise Exception("No piece matching needed descriptor found in game, synchronization between instances of game lost.")
+                
+                # If the move is a promotion, move the promotion piece to the correct square
+                if results["promotion"]:
+                    for piece in game.gamePieces:
+                        if piece.squarey == 9:
+                            if piece.name == results["promotionPiece"]:
+                                piece.move(results["moveTo"][0], results["moveTo"][1], game.gamePieces, countMovement=True)
+                                break
 
             if self.status != previousStatus:
                 if self.status == "playing":
                     menu.game_screen()
                     game.start_game(online=True)
+            # Check if we need to show the draw screen
+            if self.result == ("oneProposedDraw" if self.player == 2 else "twoProposedDraw"):
+                menu.proposed_draw_screen()
                 
         if self.status == "get_key":
             self.showUnderline = monotonic()%1 >= 0.5
