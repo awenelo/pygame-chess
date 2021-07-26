@@ -65,26 +65,43 @@ class Players():
                 return player
 
     # Check if a move is valid
-    def is_valid_move(self, piece, *args, ignoreTurn=False, **kwargs):
+    def is_valid_move(self, game, piece, *args, ignoreTurn=False, **kwargs):
         # Check if the game is running
         if self.gameOver:
             return False
-        if not ignoreTurn:
-            # Check if the next move needs to be a promotion
-            if self.nextMovePromotion and piece.promotion is None:
-                return False
-            
-            # Check if it's the same colour as the current player
-            if piece.white != self.get_active_player().playerNumber:
+
+        # Check if the recorder is online_recorder or pgn_recorder
+        if game.onlineGame:
+            # Check if it's our move
+            if game.recorder.nextPlayer != game.recorder.player:
                 return False
 
+            # Check that the piece is the correct colour
+            if piece.white != game.recorder.player % 2:
+                return False
+
+        else:
+            if not ignoreTurn:
+                # Check if the next move needs to be a promotion
+                if self.nextMovePromotion and piece.promotion is None:
+                    return False
+                
+                # Check if it's the same colour as the current player
+                if piece.white != self.get_active_player().playerNumber:
+                    return False
+        
         # If it is the same colour, run the piece's is_valid_move function
         return piece.is_valid_move(*args, **kwargs)
 
-    def highlight_moves(self, piece, *args, **kwargs):
+    def highlight_moves(self, game, piece, *args, **kwargs):
         # Highlight valid moves
-        if piece.white != self.get_active_player().playerNumber:
-            return False
+        # If we're in an online game, check against the recorder for which player should move, otherwise check against the players
+        if game.onlineGame:
+            if piece.white != game.recorder.player % 2 or game.recorder.player != game.recorder.nextPlayer:
+                return False
+        else:
+            if piece.white != self.get_active_player().playerNumber:
+                return False
         # Check if the next move needs to be a promotion
         if self.nextMovePromotion and piece.promotion is None:
             return False
@@ -118,10 +135,11 @@ class Players():
             player.toggle_active()
         
 
-    def draw(self, screen):
-        # Draw each player's information
-        for player in self.players:
-            player.draw(screen)
+    def draw(self, screen, game):
+        # Draw each player's information, if we're in a single-player game
+        if not game.onlineGame:
+            for player in self.players:
+                player.draw(screen)
 
     def update(self, pieces):
         # Check if the game is over

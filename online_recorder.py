@@ -131,9 +131,9 @@ class Recorder():
         return True
     
     def draw(self, screen):
+        font = pygame.font.Font(configs.FONT, 25)
         if self.status == "get_key":
             # If we're getting a key, display what we have right now
-            font = pygame.font.Font(configs.FONT, 25)
             # Create the text
             pendingtxt = font.render("Enter a game code: " + self.pendingKey, True, (0,0,0))
             # Create a rectangle that holds the text and center it
@@ -151,7 +151,14 @@ class Recorder():
             screen.blit(txt, txtRect)
         elif self.status == "waiting":
             # If we're waiting for a second player, display the game key
-            txt = pygame.font.Font(configs.FONT, 25).render(f"Your game code is: {self.game_key}", True, (0,0,0))
+            txt = font.render(f"Your game code is: {self.game_key}", True, (0,0,0))
+            txtRect = txt.get_rect()
+            txtRect.centerx = configs.WIDTH//2
+            txtRect.top = 12
+            screen.blit(txt, txtRect)
+        elif self.status == "playing":
+            # If we're playing, display if it's our turn or our oponents turn
+            txt = font.render(("Your turn" if self.player == self.nextPlayer else "Opponent's turn"), True, (0,0,0))
             txtRect = txt.get_rect()
             txtRect.centerx = configs.WIDTH//2
             txtRect.top = 12

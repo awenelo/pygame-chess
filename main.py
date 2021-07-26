@@ -80,7 +80,7 @@ def main():
                             selectedPiece[0].rect.y//configs.SQUARE_SIZE
                             )
                         # Check if the square we're moving to is valid
-                        if game.players.is_valid_move(selectedPiece[0], targetSquare, game.gamePieces, board, capture=True):                  
+                        if game.players.is_valid_move(game, selectedPiece[0], targetSquare, game.gamePieces, board, capture=True):                  
                             # If so, move to the square
                             game.players.move(selectedPiece[0], game.recorder, board, targetSquare[0], targetSquare[1], game.gamePieces, countMovement=True)
 
@@ -99,7 +99,7 @@ def main():
                         while len(selectedPiece)>0:
                             selectedPiece[0].select()
                             board.remove_highlights()
-                            if game.players.highlight_moves(selectedPiece[0], game.gamePieces, board):
+                            if game.players.highlight_moves(game, selectedPiece[0], game.gamePieces, board):
                                 break
                             selectedPiece[0].deselect()
                             selectedPiece.pop(0)
@@ -114,7 +114,7 @@ def main():
                         while len(selectedPiece)>0:
                             selectedPiece[0].select()
                             board.remove_highlights()
-                            if game.players.highlight_moves(selectedPiece[0], game.gamePieces, board):
+                            if game.players.highlight_moves(game, selectedPiece[0], game.gamePieces, board):
                                 break
                             selectedPiece[0].deselect()
                             selectedPiece.pop(0)
@@ -133,7 +133,7 @@ def main():
             # Get the pieces the mouse is over
             for piece in game.gamePieces.spriteCollidedWithPoint(mousePos):
                 # Check if there's a move that can be highlighted
-                if game.players.highlight_moves(piece, game.gamePieces, board):
+                if game.players.highlight_moves(game, piece, game.gamePieces, board):
                     # If there is, clear the highlights and highlight the square the mouse is over
                     board.remove_other_highlight_points(mousePos)
                     board.highlight_point(mousePos)
@@ -158,7 +158,7 @@ def main():
         game.gamePieces.draw(screen, selectedPiece=selectedPiece)
 
         # Draw the player information
-        game.players.draw(screen)
+        game.players.draw(screen, game)
 
         # Draw the selectedPiece above everything else, if there is a selected piece
         if len(selectedPiece)>0:

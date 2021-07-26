@@ -204,7 +204,7 @@ class King(Piece):
             if sprite.white == self.white:
                 continue
             # Check if the sprite can move to us
-            if players.is_valid_move(sprite, square, gamePieces, board, ignoreTurn=True, capture=True, ignoreCheck=True):
+            if sprite.is_valid_move(square, gamePieces, board, capture=True, ignoreCheck=True):
                 threats.append(sprite)
         return threats
         
