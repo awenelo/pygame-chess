@@ -55,6 +55,8 @@ def main():
     while True:
         # Store if a move was made this loop
         moveMade = False
+        if game.onlineGame:
+            game.recorder.moveMade
 
         # Wait for the next frame
         timeSinceTick = clock.tick(configs.FRAMERATE)
@@ -149,7 +151,7 @@ def main():
         # Draw the board
         board.draw(screen, pygame.mouse.get_pos() if len(selectedPiece) == 0 else selectedPiece[0].rect.center, nameSquare=game.inGame)
         # Update the game pieces
-        game.gamePieces.update(game.gamePieces, board, moveMade, players=game.players)
+        game.gamePieces.update(game.gamePieces, board, moveMade or (False if not game.onlineGame else game.recorder.moveMade), players=game.players)
 
         # Update the players
         game.players.update(game.gamePieces)

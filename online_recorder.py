@@ -33,6 +33,9 @@ class Recorder():
         # Count which move we're on
         self.move = 0
 
+        # Store if we've made a move
+        self.moveMade = False
+
         # Store the angle of the loading circle
         self.loadingCircleAngle = 0
 
@@ -80,7 +83,7 @@ class Recorder():
                 )
             if req.status_code == 200:
                 self.move += 1
-            self.update(self.game, self.menu)
+            self.update(self.game, self.menu, force=True)
             if req.status_code != 200:
                 return False
             return True
@@ -108,7 +111,7 @@ class Recorder():
                 )
             if req.status_code == 200:
                 self.move += 1
-            self.update(self.game, self.menu)
+            self.update(self.game, self.menu, force=True)
             if req.status_code != 200:
                 return False
             return True
@@ -176,9 +179,9 @@ class Recorder():
             loadingCircleRotatedRect.center = self.loadingCircleRect.center
             screen.blit(loadingCircleRotated, loadingCircleRotatedRect)
 
-    def update(self, game, menu):
+    def update(self, game, menu, force=False):
         # Get the status of the game, if it's been at least 5 seconds since we last did and we're not still getting a key
-        if self.status != "get_key" and monotonic() - self.lastUpdate > 5:
+        if force or (self.status != "get_key" and monotonic() - self.lastUpdate > 5):
             # Reset the time since the last update
             self.lastUpdate = monotonic()
 
@@ -213,6 +216,7 @@ class Recorder():
                     for piece in game.gamePieces.spriteCollidedWithPoint(results["pieceLocation"]):
                         if piece.name == results["pieceName"]:
                             piece.move(results["moveToSquare"][0], results["moveToSquare"][1], game.gamePieces, countMovement=True)
+                            self.moveMade = True
                             # If we find a piece that matches our needs, do the move
                             break
                     # If there's no piece that matched, raise an error
