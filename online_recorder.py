@@ -90,6 +90,8 @@ class Recorder():
                             }),
                 headers={"Content-Type": "application/json"}
                 )
+            # Clear the promotion after sending the data
+            self.promotion = False
             if req.status_code == 200:
                 self.move += 1
             self.update(self.game, self.menu, force=True)
